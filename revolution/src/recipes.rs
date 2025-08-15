@@ -5,6 +5,15 @@ use std::fmt::Debug;
 
 use crate::ResourceType;
 
+macro_rules! create_recipe {
+    ($recipe_name:ident) => {
+        #[derive(Debug, Clone, Copy)]
+        struct $recipe_name {
+            pub(crate) dummy: (),
+        }
+    };
+}
+
 /// Any recipe that implements this trait can be used in an [`Assembler`](crate::buildings::Assembler).
 pub trait AssemblerRecipe: Debug {
     const INPUT1: ResourceType;
