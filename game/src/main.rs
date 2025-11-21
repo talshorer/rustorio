@@ -1,4 +1,4 @@
-use revolution::{
+use rustorio::{
     self, Bundle, Resource, ResourceType, Tick,
     buildings::Furnace,
     gamemodes::{self},
@@ -10,7 +10,7 @@ type GameMode = gamemodes::Tutorial;
 type StartingResources = <GameMode as gamemodes::GameMode>::StartingResources;
 
 fn main() {
-    revolution::play::<GameMode>(user_main);
+    rustorio::play::<GameMode>(user_main);
 }
 
 fn user_main(mut tick: Tick, starting_resources: StartingResources) -> (Tick, Bundle<{ ResourceType::Copper }, 1>) {
@@ -20,7 +20,7 @@ fn user_main(mut tick: Tick, starting_resources: StartingResources) -> (Tick, Bu
 
     let mut copper_ore = Resource::empty();
 
-    copper_ore += revolution::mine_copper::<2>(&mut tick);
+    copper_ore += rustorio::mine_copper::<2>(&mut tick);
 
     furnace.add_input(&tick, copper_ore.bundle::<2>().unwrap());
     while furnace.cur_output(&tick) < 1 {

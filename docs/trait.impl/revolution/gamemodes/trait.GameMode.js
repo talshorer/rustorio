@@ -1,5 +1,5 @@
 (function() {
-    var implementors = Object.fromEntries([["revolution",[]]]);
+    var implementors = Object.fromEntries([["rustorio",[]]]);
     if (window.register_implementors) {
         window.register_implementors(implementors);
     } else {

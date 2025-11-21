@@ -20,7 +20,7 @@ static ONCE: Once = Once::new();
 /// Runs your play. If it is run multiple times, it will panic. This is to prevent using multiple threads to cheat.
 pub fn play<G: GameMode>(main: fn(Tick, G::StartingResources) -> (Tick, G::VictoryResources)) -> ! {
     if ONCE.is_completed() {
-        panic!("revolution::play() can only be called once per program run.");
+        panic!("rustorio::play() can only be called once per program run.");
     }
     ONCE.call_once(|| {});
     let tick = Tick::start();

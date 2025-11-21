@@ -2,7 +2,7 @@ play:
     cargo play
 
 doc *FLAGS: 
-    cargo doc -p revolution --no-deps {{ FLAGS }}
+    cargo doc -p rustorio --no-deps {{ FLAGS }}
     cp -r target/doc/* docs/
 
 push BRANCH:

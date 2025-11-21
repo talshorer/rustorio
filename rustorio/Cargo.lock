@@ -3,5 +3,5 @@
 version = 4
 
 [[package]]
-name = "revolution"
+name = "rustorio"
 version = "0.1.0"
