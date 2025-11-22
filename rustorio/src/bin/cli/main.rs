@@ -16,6 +16,8 @@ macro_rules! game_bin_file {
     };
 }
 
+const RUST_TOOLCHAIN: &str = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/../rust-toolchain"));
+
 #[derive(Parser)]
 struct Cli {
     #[clap(subcommand)]
@@ -27,6 +29,7 @@ impl Cli {
         match &self.command {
             Commands::Setup(args) => args.run(),
             Commands::NewGame(args) => args.run(),
+            Commands::Play(args) => args.run(),
         }
     }
 }
@@ -35,6 +38,7 @@ impl Cli {
 enum Commands {
     Setup(SetupArgs),
     NewGame(NewGameArgs),
+    Play(PlayArgs),
 }
 
 #[derive(Args)]
@@ -77,6 +81,7 @@ impl SetupArgs {
             .status()
             .context("Failed to add Rustorio as a dependency")?;
         fs::write(path.join("rustorio.toml"), "").context("Failed to create rustorio.toml")?;
+        fs::write(path.join("rust-toolchain"), RUST_TOOLCHAIN).context("Failed to create rust-toolchain file")?;
         let save_path = path.join("src").join("bin");
         fs::create_dir_all(&save_path).context("Failed to create save directory")?;
         if self.include_tutorial {
@@ -190,6 +195,37 @@ impl NewGameArgs {
             save_game_name,
             save_game_path.parent().unwrap().display()
         );
+        Ok(())
+    }
+}
+
+#[derive(Args)]
+pub struct PlayArgs {
+    save_name: String,
+}
+
+impl PlayArgs {
+    pub fn run(&self) -> Result<()> {
+        let rustorio_root = if let Some(rustorio_root) =
+            find_rustorio_root().context("Failed while looking for Rustorio root")?
+        {
+            rustorio_root
+        } else {
+            bail!(
+                "Can only run command in a Rustorio project. Please either navigate to a Rustorio project or run 'rustorio setup' first."
+            );
+        };
+        let save_game_path = rustorio_root.join("src").join("bin").join(&self.save_name);
+        if !save_game_path.exists() {
+            bail!("Save game '{}' does not exist.", self.save_name);
+        }
+        Command::new(env!("CARGO"))
+            .arg("run")
+            .arg("--bin")
+            .arg(&self.save_name)
+            .current_dir(rustorio_root)
+            .status()
+            .context("Failed to run Rustorio game")?;
         Ok(())
     }
 }
