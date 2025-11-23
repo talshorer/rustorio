@@ -7,28 +7,37 @@ you can write the program so it compiles and doesn't panic, you win!
 ## How to play
 
 1. Install [Rust](https://www.rust-lang.org/tools/install). Specifically it's
-   important to have the entire rustup toolchain which you get automatically by
-   following the instructions in the link.
-2. Clone this repo.
-3. A play of this game is a Rust executable where the main function does nothing
-   but call `rustorio::play()`. This function takes a closure. Writing this
-   closure is the gameplay. I would recommend starting by editing
-   `game/src/main.rs`. Some examples of play are in `rustorio/src/bin/`.
-4. Run with `cargo play`. This will compile and run your solution and tell you
-   if you win or panic.
-5. Winning is not difficult, the goal is to see how few ticks you need for it.
+   important to have the entire rustup toolchain and cargo, all of which you get
+   automatically by following the instructions in the link.
+2. Install `rustorio` by running `cargo install rustorio`.
+3. Set up a new Rustorio project by running `rustorio setup <path>`, where
+   `<path>` is the directory you want to create the project in (defaults to
+   '.').
+4. Under `src/bin/tutorial/` you will find a tutorial save. You can start by
+   playing that one.
+5. To play other game modes, run `rustorio new-game` and specify a game mode.
+   Use `rustorio new-game --help` to see all available game modes.
+6. Playing the game consists of filling out the `user_main` function in the
+   `main.rs` file in the save game folder created for you.
+7. Run with `rustorio play <save name>`. This will compile and run your save. If
+   it compiles and completes without panicking, you win! It'll then tell you how
+   many ticks it took you to win.
 
 ## Rules
 
-The only rule that is not enforced by the compiler is that you should use the
-library as it exists in the repo. By editing the library it is trivial to do
-arbitrarily well. I have deliberately not done anything to prevent this, as that
-could be seen as a challenge.
+The rules are enforced by the compiler. Only thing I'd say is to not remove the
+`#![deny(unsafe_code)]` at the top of the `main.rs` file, as using unsafe code
+can bypass most of what the compiler enforces. If you think you've found a way
+to cheat the game that isn't caught by the compiler, please file an issue! Part
+of my interest in this project is whether I can actually rule out all possible
+cheating vectors using only the Rust compiler. I haven't found a way to cheat
+yet, but I'm sure others will be more creative than me!
 
 ## Help
 
-The manual is available [here](https://albertsgarde.github.io/rustorio). A good
-place to start is to build a
+Documentation for the Rustorio library can be found
+[here](https://albertsgarde.github.io/rustorio/rustorio). A good place to start
+is to build a
 [furnace](https://albertsgarde.github.io/rustorio/rustorio/buildings/struct.Furnace.html)
 and start
 [mining](https://albertsgarde.github.io/rustorio/rustorio/fn.mine_iron.html) and
