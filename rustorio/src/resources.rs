@@ -7,6 +7,8 @@ use std::{
     ops::{Add, AddAssign},
 };
 
+/// The different types of resources in the game.
+/// Used as a const generic parameter for both [`Resource`](Resource) and [`Bundle`](Bundle).
 #[derive(ConstParamTy, Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ResourceType {
     Point,

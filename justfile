@@ -11,3 +11,6 @@ doc *FLAGS:
 push BRANCH:
     jj bookmark move {{BRANCH}} --to=@-
     jj git push
+
+publish:
+    cargo publish --allow-dirty

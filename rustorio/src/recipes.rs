@@ -7,12 +7,19 @@ use crate::ResourceType;
 
 /// Any recipe that implements this trait can be used in an [`Assembler`](crate::buildings::Assembler).
 pub trait AssemblerRecipe: Debug {
+    /// The first of the two types of resources consumed by this recipe.
     const INPUT1: ResourceType;
+    /// The amount of the first input resource consumed by this recipe.
     const INPUT1_AMOUNT: u32;
+    /// The second of the two types of resources consumed by this recipe.
     const INPUT2: ResourceType;
+    /// The amount of the second input resource consumed by this recipe.
     const INPUT2_AMOUNT: u32;
+    /// The type of resource produced by this recipe.
     const OUTPUT: ResourceType;
+    /// The amount of the output resource produced by this recipe.
     const OUTPUT_AMOUNT: u32;
+    /// The time (in ticks) it takes to complete this recipe.
     const TIME: u64;
 }
 

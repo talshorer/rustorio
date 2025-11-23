@@ -26,7 +26,9 @@ pub struct Assembler<R: AssemblerRecipe> {
     recipe: PhantomData<R>,
 }
 
+/// Input [`Bundle`](Bundle) required to build an assembler.
 type AssemblerIronInput = Bundle<{ ResourceType::Iron }, 15>;
+/// Input [`Bundle`](Bundle) required to build an assembler.
 type AssemblerCopperInput = Bundle<{ ResourceType::Copper }, 10>;
 
 impl<R: AssemblerRecipe> Assembler<R> {
@@ -180,6 +182,7 @@ pub struct Furnace<R: FurnaceRecipe> {
     recipe: PhantomData<R>,
 }
 
+/// Input [`Bundle`](Bundle) required to build a furnace.
 type FurnaceIronInput = Bundle<{ ResourceType::Iron }, 10>;
 
 impl<R: FurnaceRecipe> Furnace<R> {
@@ -228,21 +231,25 @@ impl<R: FurnaceRecipe> Furnace<R> {
         }
     }
 
+    /// How much of the input resource is currently in the furnace.
     pub fn cur_input(&mut self, tick: &Tick) -> u32 {
         self.tick(tick);
         self.input_amount
     }
 
+    /// How much of the output resource is currently in the furnace.
     pub fn cur_output(&mut self, tick: &Tick) -> u32 {
         self.tick(tick);
         self.output_amount
     }
 
+    /// Consumes a [`Bundle`](Bundle) and puts the contained resources into the furnace.
     pub fn add_input<const AMOUNT: u32>(&mut self, tick: &Tick, _ore: Bundle<{ R::INPUT }, AMOUNT>) {
         self.tick(tick);
         self.input_amount += AMOUNT;
     }
 
+    /// Takes a specified amount of input resources from the furnace and puts it into a [`Bundle`](Bundle).
     pub fn take_input<const AMOUNT: u32>(&mut self, tick: &Tick) -> Option<Bundle<{ R::INPUT }, AMOUNT>> {
         self.tick(tick);
         if self.input_amount >= AMOUNT {
@@ -253,6 +260,7 @@ impl<R: FurnaceRecipe> Furnace<R> {
         }
     }
 
+    /// Takes all input resources currently in the furnace and puts it into a [`Resource`](Resource).
     pub fn empty_input(&mut self, tick: &Tick) -> Resource<{ R::INPUT }> {
         self.tick(tick);
         let amount = self.input_amount;
@@ -260,6 +268,7 @@ impl<R: FurnaceRecipe> Furnace<R> {
         Resource { amount }
     }
 
+    /// Takes a specified amount of output resources from the furnace and puts it into a [`Bundle`](Bundle).
     pub fn take_output<const AMOUNT: u32>(&mut self, tick: &Tick) -> Option<Bundle<{ R::OUTPUT }, AMOUNT>> {
         self.tick(tick);
         if self.output_amount >= AMOUNT {
@@ -270,6 +279,7 @@ impl<R: FurnaceRecipe> Furnace<R> {
         }
     }
 
+    /// Takes all output resources currently in the furnace and puts it into a [`Resource`](Resource).
     pub fn empty_output(&mut self, tick: &Tick) -> Resource<{ R::OUTPUT }> {
         self.tick(tick);
         let amount = self.output_amount;

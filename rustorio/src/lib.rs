@@ -31,6 +31,7 @@ pub fn play<G: GameMode>(main: fn(Tick, G::StartingResources) -> (Tick, G::Victo
     std::process::exit(0);
 }
 
+/// A bundle of specifically iron ore.
 pub type IronOreBundle<const AMOUNT: u32> = Bundle<{ ResourceType::IronOre }, AMOUNT>;
 
 /// Mines iron ore. Takes 2 ticks to mine 1 ore.
@@ -41,6 +42,7 @@ pub fn mine_iron<const AMOUNT: u32>(tick: &mut Tick) -> IronOreBundle<AMOUNT> {
     Bundle::new()
 }
 
+/// A bundle of specifically copper ore.
 pub type CopperOreBundle<const AMOUNT: u32> = Bundle<{ ResourceType::CopperOre }, AMOUNT>;
 
 /// Mines copper ore. Takes 2 ticks to mine 1 ore.
