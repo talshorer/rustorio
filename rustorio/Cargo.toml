@@ -1,6 +1,6 @@
 [package]
 name = "rustorio"
-version = "0.0.2"
+version = "0.0.3"
 edition = "2024"
 description = """The first game written and played entirely in Rust. Not just do you play by
 writing Rust code, the rules of the game are enforced by the Rust compiler! If
