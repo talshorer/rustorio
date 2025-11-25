@@ -31,7 +31,7 @@
 //! ## Rules
 //!
 //! The rules are enforced by the compiler. Only thing I'd say is to not remove the
-//! `#![deny(unsafe_code)]` at the top of the `main.rs` file, as using unsafe code
+//! `#![forbid(unsafe_code)]` at the top of the `main.rs` file, as using unsafe code
 //! can bypass most of what the compiler enforces. If you think you've found a way
 //! to cheat the game that isn't caught by the compiler, please file an issue! Part
 //! of my interest in this project is whether I can actually rule out all possible
