@@ -12,7 +12,7 @@ you can write the program so it compiles and doesn't panic, you win!
 1. Install [Rust](https://www.rust-lang.org/tools/install). Specifically it's
    important to have the entire rustup toolchain and cargo, all of which you get
    automatically by following the instructions in the link.
-2. Install `rustorio` by running `cargo install rustorio`.
+2. Install `rustorio` by running `cargo +nightly install rustorio`.
 3. Set up a new Rustorio project by running `rustorio setup <path>`, where
    `<path>` is the directory you want to create the project in (defaults to
    '.').
