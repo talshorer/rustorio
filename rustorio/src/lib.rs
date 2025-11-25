@@ -3,7 +3,7 @@
 //! [github]: https://img.shields.io/badge/github-8da0cb?style=for-the-badge&labelColor=555555&logo=github
 //! [crates-io]: https://img.shields.io/badge/crates.io-fc8d62?style=for-the-badge&labelColor=555555&logo=rust
 //!
-//! The first game written _and played_ entirely in Rust. Not just do you play by
+//! The first game written _and played_ entirely in Rust's type system. Not just do you play by
 //! writing Rust code, the rules of the game are enforced by the Rust compiler! If
 //! you can write the program so it compiles and doesn't panic, you win!
 //!

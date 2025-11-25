@@ -5,7 +5,7 @@
 [Docs]: https://img.shields.io/docsrs/rustorio.svg
 [docs.rs]: https://docs.rs/rustorio
 
-The first game written _and played_ entirely in Rust. Not just do you play by
+The first game written _and played_ entirely in Rust's type system. Not just do you play by
 writing Rust code, the rules of the game are enforced by the Rust compiler! If
 you can write the program so it compiles and doesn't panic, you win!
 ## How to play
