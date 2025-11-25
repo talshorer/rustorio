@@ -28,7 +28,7 @@ impl Tick {
         if self.log {
             println!("Tick: {}", self.tick);
         }
-        self.tick += 1;
+        self.tick = self.tick.checked_add(1).expect("Tick overflow. Well done you've found an exploit. Or you would have if `https://github.com/albertsgarde/rustorio/issues/3` hadn't beaten you to it!");
     }
 
     /// Returns the current tick number.
