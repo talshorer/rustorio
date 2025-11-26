@@ -85,10 +85,13 @@ pub struct SetupArgs {
 impl SetupArgs {
     pub fn run(&self) -> Result<()> {
         if !self.path.exists() {
-            return Err(anyhow::anyhow!("The specified path '{}' does not exist.", self.path.display()));
+            bail!("The specified path '{}' does not exist.", self.path.display());
         }
 
-        let canonical_path = self.path.canonicalize().context("Could not canonicalize specified path")?;
+        let canonical_path = self
+            .path
+            .canonicalize()
+            .context("Could not canonicalize specified path")?;
 
         if canonical_path.join("rustorio").exists() {
             bail!(
