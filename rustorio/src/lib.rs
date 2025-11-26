@@ -104,3 +104,7 @@ pub fn mine_copper<const AMOUNT: u32>(tick: &mut Tick) -> CopperOreBundle<AMOUNT
     }
     Bundle::new()
 }
+
+mod sealed {
+    pub trait Sealed {}
+}

@@ -3,10 +3,10 @@
 
 use std::fmt::Debug;
 
-use crate::ResourceType;
+use crate::{ResourceType, sealed::Sealed};
 
 /// Any recipe that implements this trait can be used in an [`Assembler`](crate::buildings::Assembler).
-pub trait AssemblerRecipe: Debug {
+pub trait AssemblerRecipe: Debug + Sealed {
     /// The first of the two types of resources consumed by this recipe.
     const INPUT1: ResourceType;
     /// The amount of the first input resource consumed by this recipe.
@@ -27,6 +27,8 @@ pub trait AssemblerRecipe: Debug {
 #[derive(Debug)]
 pub struct PointRecipe;
 
+impl Sealed for PointRecipe {}
+
 impl AssemblerRecipe for PointRecipe {
     const INPUT1: ResourceType = ResourceType::Iron;
     const INPUT1_AMOUNT: u32 = 4;
@@ -38,7 +40,7 @@ impl AssemblerRecipe for PointRecipe {
 }
 
 /// Any recipe that implements this trait can be used in a [`Furnace`](crate::buildings::Furnace).
-pub trait FurnaceRecipe: Debug {
+pub trait FurnaceRecipe: Debug + Sealed {
     const INPUT: ResourceType;
     const INPUT_AMOUNT: u32;
     const OUTPUT: ResourceType;
@@ -49,6 +51,8 @@ pub trait FurnaceRecipe: Debug {
 /// A [`Furnace`](crate::buildings::Furnace) recipe that smelts iron ore into iron. Converts 2 iron ore into 1 iron. Takes 10 ticks.
 #[derive(Debug)]
 pub struct IronSmelting;
+
+impl Sealed for IronSmelting {}
 
 impl FurnaceRecipe for IronSmelting {
     const INPUT: ResourceType = ResourceType::IronOre;
@@ -61,6 +65,8 @@ impl FurnaceRecipe for IronSmelting {
 /// A [`Furnace`](crate::buildings::Furnace) recipe that smelts copper ore into copper. Converts 2 copper ore into 1 copper. Takes 10 ticks.
 #[derive(Debug)]
 pub struct CopperSmelting;
+
+impl Sealed for CopperSmelting {}
 
 impl FurnaceRecipe for CopperSmelting {
     const INPUT: ResourceType = ResourceType::CopperOre;
