@@ -12,5 +12,9 @@ push BRANCH:
     jj bookmark move {{BRANCH}} --to=@-
     jj git push
 
+pull:
+    jj git fetch
+    jj new main
+
 publish:
     cargo publish --allow-dirty
