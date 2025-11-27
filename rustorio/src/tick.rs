@@ -22,13 +22,46 @@ impl Tick {
     }
 
     /// Advances the game by one tick.
+    ///
     /// By default prints the current tick number to the console.
     /// If you want to disable this, use the [`log`](Tick::log) method.
-    pub fn next(&mut self) {
+    pub fn advance(&mut self) {
+        self.advance_by(1);
+    }
+
+    /// Advances the game by the specified number of ticks.
+    ///
+    /// By default prints the current tick number to the console.
+    /// If you want to disable this, use the [`log`](Tick::log) method.
+    pub fn advance_by(&mut self, ticks: u64) {
+        self.tick = self.tick.checked_add(ticks).expect("Tick overflow. Well done you've found an exploit! Or you would have if `https://github.com/albertsgarde/rustorio/issues/3` hadn't beaten you to it!");
         if self.log {
-            println!("Tick: {}", self.tick);
+            println!("{self}");
         }
-        self.tick = self.tick.checked_add(1).expect("Tick overflow. Well done you've found an exploit. Or you would have if `https://github.com/albertsgarde/rustorio/issues/3` hadn't beaten you to it!");
+    }
+
+    /// Advances the game until the specified tick number is reached.
+    /// Does nothing if the target tick is less than or equal to the current tick.
+    ///
+    /// By default prints the current tick number to the console.
+    /// If you want to disable this, use the [`log`](Tick::log) method.
+    pub fn advance_to_tick(&mut self, target_tick: u64) {
+        if target_tick > self.tick {
+            self.advance_by(target_tick - self.tick);
+        }
+    }
+
+    /// Advances the game until the specified condition is met.
+    ///
+    /// By default prints the current tick number to the console every tick.
+    /// If you want to disable this, use the [`log`](Tick::log) method.
+    pub fn advance_until<F>(&mut self, mut condition: F)
+    where
+        F: FnMut(&Tick) -> bool,
+    {
+        while !condition(self) {
+            self.advance();
+        }
     }
 
     /// Returns the current tick number.

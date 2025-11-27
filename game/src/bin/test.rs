@@ -38,9 +38,7 @@ fn user_main(
     let mut furnace = furnace.change_recipe::<CopperSmelting>().unwrap();
 
     furnace.add_input(&tick, copper_ore.bundle::<200>().unwrap());
-    while furnace.cur_input(&tick) > 0 {
-        tick.next();
-    }
+    tick.advance_until(|tick| furnace.cur_input(tick) == 0);
 
     let mut copper = furnace.empty_output(&tick);
     println!("Copper ingots produced: {}", copper.amount());
@@ -51,9 +49,7 @@ fn user_main(
 
     assembler.add_input1(&tick, iron.bundle::<235>().unwrap());
     assembler.add_input2(&tick, copper.bundle::<90>().unwrap());
-    while assembler.cur_output(&tick) < 10 {
-        tick.next();
-    }
+    tick.advance_until(|tick| assembler.cur_output(tick) >= 10);
 
     let points = assembler.take_output(&tick).unwrap();
     (tick, points)

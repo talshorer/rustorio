@@ -88,9 +88,7 @@ pub type IronOreBundle<const AMOUNT: u32> = Bundle<{ ResourceType::IronOre }, AM
 
 /// Mines iron ore. Takes 2 ticks to mine 1 ore.
 pub fn mine_iron<const AMOUNT: u32>(tick: &mut Tick) -> IronOreBundle<AMOUNT> {
-    for _ in 0..(2 * AMOUNT) {
-        tick.next();
-    }
+    tick.advance_by(2 * AMOUNT as u64);
     Bundle::new()
 }
 
@@ -99,9 +97,7 @@ pub type CopperOreBundle<const AMOUNT: u32> = Bundle<{ ResourceType::CopperOre }
 
 /// Mines copper ore. Takes 2 ticks to mine 1 ore.
 pub fn mine_copper<const AMOUNT: u32>(tick: &mut Tick) -> CopperOreBundle<AMOUNT> {
-    for _ in 0..(2 * AMOUNT) {
-        tick.next();
-    }
+    tick.advance_by(2 * AMOUNT as u64);
     Bundle::new()
 }
 
