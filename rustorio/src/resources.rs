@@ -31,6 +31,7 @@ impl<const RESOURCE_TYPE: ResourceType> Resource<RESOURCE_TYPE> {
         Self { amount: 0 }
     }
 
+    /// The type of resource contained in this [`Resource`](Resource).
     pub fn resource_type(&self) -> ResourceType {
         RESOURCE_TYPE
     }
