@@ -25,7 +25,7 @@ fn user_main(
     let iron_ore = rustorio::mine_iron::<500>(&mut tick);
 
     let mut copper_ore = rustorio::Resource::empty();
-    furnace.add_input(&tick, iron_ore);
+    furnace.add_input(&tick, iron_ore.to_resource());
     while furnace.cur_input(&tick) > 0 {
         copper_ore += rustorio::mine_copper::<1>(&mut tick);
     }
@@ -51,6 +51,6 @@ fn user_main(
     assembler.add_input2(&tick, copper.bundle::<90>().unwrap());
     tick.advance_until(|tick| assembler.cur_output(tick) >= 10);
 
-    let points = assembler.take_output(&tick).unwrap();
+    let points = assembler.take_output_bundle(&tick).unwrap();
     (tick, points)
 }

@@ -51,6 +51,17 @@ impl<const RESOURCE_TYPE: ResourceType> Resource<RESOURCE_TYPE> {
         }
     }
 
+    /// Removes a specified amount of resources from this [`Resource`](Resource) and returns them as a new [`Resource`](Resource).
+    /// If there are insufficient resources in the [`Resource`](Resource), it returns `None`.
+    pub fn split_off(&mut self, amount: u32) -> Option<Self> {
+        if let Some(remaining) = self.amount.checked_sub(amount) {
+            self.amount = remaining;
+            Some(Resource { amount })
+        } else {
+            None
+        }
+    }
+
     /// Consumes a [`Bundle`](Bundle) of the same resource type and adds the contained resources to this [`Resource`](Resource).
     pub fn add_bundle<const AMOUNT: u32>(&mut self, bundle: Bundle<RESOURCE_TYPE, AMOUNT>) {
         self.amount += bundle.amount();
@@ -176,5 +187,13 @@ where
 
     fn add(self, _rhs: Bundle<RESOURCE_TYPE, AMOUNT_RHS>) -> Self::Output {
         Bundle::new()
+    }
+}
+
+impl<const RESOURCE_TYPE: ResourceType, const AMOUNT: u32> From<Bundle<RESOURCE_TYPE, AMOUNT>>
+    for Resource<RESOURCE_TYPE>
+{
+    fn from(_bundle: Bundle<RESOURCE_TYPE, AMOUNT>) -> Self {
+        Resource { amount: AMOUNT }
     }
 }
