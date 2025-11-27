@@ -1,9 +1,11 @@
-# Rustorio &emsp; [![Latest Version]][crates.io] [![Docs]][docs.rs] 
+# Rustorio &emsp; [![Latest Version]][crates.io] [![Docs]][docs.rs] [![Discord]][discord]
 
 [Latest Version]: https://img.shields.io/crates/v/rustorio.svg
 [crates.io]: https://crates.io/crates/rustorio
 [Docs]: https://img.shields.io/docsrs/rustorio.svg
 [docs.rs]: https://docs.rs/rustorio
+[Discord]: https://dcbadge.limes.pink/api/server/uKJugp85Fk?style=flat
+[discord]: https://discord.gg/uKJugp85Fk
 
 The first game written _and played_ entirely in Rust's type system. Not just do you play by
 writing Rust code, the rules of the game are enforced by the Rust compiler! If
