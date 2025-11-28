@@ -69,8 +69,12 @@ impl Cli {
 
 #[derive(Subcommand)]
 enum Commands {
+    /// Set up a new Rustorio folder in the specified directory.
     Setup(SetupArgs),
+    /// Create a new save game with the specified name. If not called in a Rustorio project, will prompt to set one up.
     NewGame(NewGameArgs),
+    /// Play an existing save game with the specified name.
+    /// Can only be run in a Rustorio project.
     Play(PlayArgs),
 }
 
