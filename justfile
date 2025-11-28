@@ -18,3 +18,6 @@ pull:
 
 publish:
     cargo publish --allow-dirty
+
+install-local:
+    cargo install --path rustorio
