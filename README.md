@@ -29,13 +29,14 @@ you can write the program so it compiles and doesn't panic, you win!
 To play other game modes, run `rustorio new-game` and specify a game mode.
 Use `rustorio new-game --help` to see all available game modes.
 ## Rules
-The rules are enforced by the compiler. Only thing I'd say is to not remove the
-`#![forbid(unsafe_code)]` at the top of the `main.rs` file, as using unsafe code
-can bypass most of what the compiler enforces. If you think you've found a way
-to cheat the game that isn't caught by the compiler, please file an issue! Part
-of my interest in this project is whether I can actually rule out all possible
-cheating vectors using only the Rust compiler. I haven't found a way to cheat
-yet, but I'm sure others will be more creative than me!
+The rules are mostly enforced by the compiler. The only two (current) exceptions are:
+1. Do not remove `#![forbid(unsafe_code)]` at the top of the `main.rs` file.
+2. Do not exploit unsoundness in the compiler.
+Both these would allow you to bypass the rules enforced by the compiler and make the game trivial.
+If you find other ways to bypass the rules or to do things that feel like cheating (e.g. [this issue](https://github.com/albertsgarde/rustorio/issues/1)),
+please file an issue!
+Part of my interest in this project is seeing how close we can get to rule out all possible
+cheating vectors using only the Rust compiler. So I'd love to hear about any ways to cheat.
 ## Help
 Documentation for the Rustorio library can be found
 [here](https://albertsgarde.github.io/rustorio/rustorio). A good place to start
