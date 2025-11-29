@@ -21,6 +21,6 @@ fn user_main(mut tick: Tick, starting_resources: StartingResources) -> (Tick, Bu
     // To mine copper ore, see https://albertsgarde.github.io/rustorio/rustorio/fn.mine_copper.html
 
     // To win, simply return the `Tick` and a `Bundle` containing 1 copper ingot.
-    // To get a `Bundle` containing copper ingots, you can either take it directly from a furnace using `Furnace::take_output`,
-    // or create extract it from a `Resource` using `Resource::bundle`.
+    // To get a `Bundle` containing copper ingots, you can either take it directly from a furnace using `Furnace::take_output_bundle`,
+    // or extract it from a `Resource` using `Resource::bundle`.
 }

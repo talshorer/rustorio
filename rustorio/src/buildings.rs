@@ -22,7 +22,7 @@ pub struct Assembler<R: AssemblerRecipe> {
     input2_amount: u32,
     output_amount: u32,
     tick: u64,
-    start_time: Option<u64>,
+    crafting_time: u64,
     recipe: PhantomData<R>,
 }
 
@@ -39,7 +39,7 @@ impl<R: AssemblerRecipe> Assembler<R> {
             input2_amount: 0,
             output_amount: 0,
             tick: tick.cur(),
-            start_time: None,
+            crafting_time: 0,
             recipe: PhantomData,
         }
     }
@@ -55,7 +55,7 @@ impl<R: AssemblerRecipe> Assembler<R> {
                 input2_amount: 0,
                 output_amount: 0,
                 tick: self.tick,
-                start_time: None,
+                crafting_time: 0,
                 recipe: PhantomData::<R2>,
             })
         }
@@ -63,25 +63,27 @@ impl<R: AssemblerRecipe> Assembler<R> {
 
     fn tick(&mut self, tick: &Tick) {
         assert!(tick.cur() >= self.tick, "Tick must be non-decreasing");
-        while self.tick < tick.cur() {
-            self.tick += 1;
-            if let Some(start_time) = self.start_time
-                && self.tick >= start_time + R::TIME
-                && self.input1_amount >= R::INPUT1_AMOUNT
-                && self.input2_amount >= R::INPUT2_AMOUNT
-            {
-                self.start_time = None;
-                self.input1_amount -= R::INPUT1_AMOUNT;
-                self.input2_amount -= R::INPUT2_AMOUNT;
-                self.output_amount += R::OUTPUT_AMOUNT;
-            }
-            if self.start_time.is_none()
-                && self.input1_amount >= R::INPUT1_AMOUNT
-                && self.input2_amount >= R::INPUT2_AMOUNT
-            {
-                self.start_time = Some(self.tick);
-            }
+
+        self.crafting_time += tick.cur() - self.tick;
+        let &count = [
+            (self.crafting_time / R::TIME).try_into().unwrap(),
+            self.input1_amount / R::INPUT1_AMOUNT,
+            self.input2_amount / R::INPUT2_AMOUNT,
+        ]
+        .iter()
+        .min()
+        .unwrap();
+
+        self.input1_amount -= count * R::INPUT1_AMOUNT;
+        self.input2_amount -= count * R::INPUT2_AMOUNT;
+        self.output_amount += count * R::OUTPUT_AMOUNT;
+        self.crafting_time -= u64::from(count) * R::TIME;
+
+        if self.input1_amount < R::INPUT1_AMOUNT || self.input2_amount < R::INPUT2_AMOUNT {
+            self.crafting_time = 0;
         }
+
+        self.tick = tick.cur();
     }
 
     /// How much of input resource 1 is currently in the assembler.
@@ -212,6 +214,7 @@ pub struct Furnace<R: FurnaceRecipe> {
     output_amount: u32,
     tick: u64,
     start_time: Option<u64>,
+    crafting_time: u64,
     recipe: PhantomData<R>,
 }
 
@@ -226,6 +229,7 @@ impl<R: FurnaceRecipe> Furnace<R> {
             output_amount: 0,
             tick: tick.cur(),
             start_time: None,
+            crafting_time: 0,
             recipe: PhantomData,
         }
     }
@@ -241,27 +245,51 @@ impl<R: FurnaceRecipe> Furnace<R> {
                 output_amount: 0,
                 tick: self.tick,
                 start_time: None,
+                crafting_time: 0,
                 recipe: PhantomData::<R2>,
             })
         }
     }
 
-    fn tick(&mut self, tick: &Tick) {
+    fn tick_looping(&mut self, tick: &Tick) {
         assert!(tick.cur() >= self.tick, "Tick must be non-decreasing");
+
         while self.tick < tick.cur() {
-            self.tick += 1;
-            if let Some(start_time) = self.start_time
-                && self.tick >= start_time + R::TIME
-                && self.input_amount >= R::INPUT_AMOUNT
-            {
-                self.start_time = None;
+            if self.crafting_time == 0 && self.input_amount >= R::INPUT_AMOUNT {
+                self.crafting_time += 1;
                 self.input_amount -= R::INPUT_AMOUNT;
+            } else if self.crafting_time > 0 {
+                self.crafting_time += 1;
+            }
+
+            assert!(self.crafting_time <= R::TIME);
+
+            if self.crafting_time == R::TIME {
+                self.crafting_time = 0;
                 self.output_amount += R::OUTPUT_AMOUNT;
             }
-            if self.start_time.is_none() && self.input_amount >= R::INPUT_AMOUNT {
-                self.start_time = Some(self.tick);
-            }
+
+            self.tick += 1;
         }
+    }
+
+    fn tick(&mut self, tick: &Tick) {
+        assert!(tick.cur() >= self.tick, "Tick must be non-decreasing");
+
+        self.crafting_time += tick.cur() - self.tick;
+        let count = u32::min(
+            (self.crafting_time / R::TIME).try_into().unwrap(),
+            self.input_amount / R::INPUT_AMOUNT,
+        );
+        self.input_amount -= count * R::INPUT_AMOUNT;
+        self.output_amount += count * R::OUTPUT_AMOUNT;
+        self.crafting_time -= u64::from(count) * R::TIME;
+
+        if self.input_amount < R::INPUT_AMOUNT {
+            self.crafting_time = 0;
+        }
+
+        self.tick = tick.cur();
     }
 
     /// How much of the input resource is currently in the furnace.

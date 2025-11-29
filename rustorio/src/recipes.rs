@@ -1,7 +1,7 @@
 //! A recipe is a way of turning resources into other resources.
 //! A specific recipe specifies the input and output resources, as well as the time it takes to complete the recipe.
 
-use std::fmt::Debug;
+use std::{fmt::Debug, num::NonZeroU64};
 
 use crate::{ResourceType, sealed::Sealed};
 
@@ -20,6 +20,7 @@ pub trait AssemblerRecipe: Debug + Sealed {
     /// The amount of the output resource produced by this recipe.
     const OUTPUT_AMOUNT: u32;
     /// The time (in ticks) it takes to complete this recipe.
+    /// Even though this is only enforced at runtime, this must not be 0.
     const TIME: u64;
 }
 
@@ -62,6 +63,8 @@ pub trait FurnaceRecipe: Debug + Sealed {
     const INPUT_AMOUNT: u32;
     const OUTPUT: ResourceType;
     const OUTPUT_AMOUNT: u32;
+    /// The time (in ticks) it takes to complete this recipe.
+    /// Even though this is only enforced at runtime, this must not be 0.
     const TIME: u64;
 }
 

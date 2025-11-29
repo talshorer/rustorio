@@ -1,7 +1,7 @@
 use rustorio::{
     buildings::{Assembler, Furnace},
     gamemodes,
-    recipes::{CopperSmelting, IronSmelting, RedScienceRecipe},
+    recipes::{AssemblerRecipe, CopperSmelting, IronSmelting, RedScienceRecipe},
     research::Research,
 };
 
