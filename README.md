@@ -22,7 +22,7 @@ you can write the program so it compiles and doesn't panic, you win!
    playing that one.
 5. Playing the game consists of filling out the `user_main` function in the
    `main.rs` file in the save game folder created for you.
-6. Run with `rustorio play <save name>`. This will compile and run your save. If
+6. Run with `rustorio play <save name>` (e.g. `rustorio play tutorial`). This will compile and run your save. If
    it compiles and completes without panicking, you win! It'll then tell you how
    many ticks it took you to win.
 ### After the tutorial
