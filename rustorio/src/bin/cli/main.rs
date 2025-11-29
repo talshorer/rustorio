@@ -75,6 +75,9 @@ enum Commands {
     NewGame(NewGameArgs),
     /// Play an existing save game with the specified name.
     /// Can only be run in a Rustorio project.
+    ///
+    /// For example, in most Rustorio folders, there'll be a `tutorial` save game.
+    /// To run it, use `rustorio play tutorial`.
     Play(PlayArgs),
 }
 
@@ -244,6 +247,7 @@ impl NewGameArgs {
 
 #[derive(Args)]
 pub struct PlayArgs {
+    /// The name of the save game to run.
     save_name: String,
 }
 
