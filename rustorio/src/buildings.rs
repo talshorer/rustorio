@@ -33,7 +33,7 @@ type AssemblerCopperInput = Bundle<{ ResourceType::Copper }, 10>;
 
 impl<R: AssemblerRecipe> Assembler<R> {
     /// Builds an assembler. Costs 15 iron and 10 copper.
-    pub fn build(tick: &Tick, _iron: AssemblerIronInput, _copper: AssemblerCopperInput) -> Self {
+    pub fn build(tick: &Tick, _recipe: R, _iron: AssemblerIronInput, _copper: AssemblerCopperInput) -> Self {
         Self {
             input1_amount: 0,
             input2_amount: 0,
@@ -46,7 +46,7 @@ impl<R: AssemblerRecipe> Assembler<R> {
 
     /// Changes the [`Recipe`](crate::recipes) of the assembler.
     /// Returns the original assembler if the assembler has no inputs or outputs.
-    pub fn change_recipe<R2: AssemblerRecipe>(self) -> Result<Assembler<R2>, Assembler<R>> {
+    pub fn change_recipe<R2: AssemblerRecipe>(self, _recipe: R2) -> Result<Assembler<R2>, Assembler<R>> {
         if self.input1_amount > 0 || self.input2_amount > 0 || self.output_amount > 0 {
             Err(self)
         } else {
@@ -220,7 +220,7 @@ type FurnaceIronInput = Bundle<{ ResourceType::Iron }, 10>;
 
 impl<R: FurnaceRecipe> Furnace<R> {
     /// Builds a furnace. Costs 10 iron.
-    pub fn build(tick: &Tick, _iron: FurnaceIronInput) -> Self {
+    pub fn build(tick: &Tick, _recipe: R, _iron: FurnaceIronInput) -> Self {
         Self {
             input_amount: 0,
             output_amount: 0,
@@ -232,7 +232,7 @@ impl<R: FurnaceRecipe> Furnace<R> {
 
     /// Changes the [`Recipe`](crate::recipes) of the furnace.
     /// Returns the original furnace if the furnace has no inputs or outputs.
-    pub fn change_recipe<R2: FurnaceRecipe>(self) -> Result<Furnace<R2>, Furnace<R>> {
+    pub fn change_recipe<R2: FurnaceRecipe>(self, _recipe: R2) -> Result<Furnace<R2>, Furnace<R>> {
         if self.input_amount > 0 || self.output_amount > 0 {
             Err(self)
         } else {

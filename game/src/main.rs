@@ -16,7 +16,7 @@ fn main() {
 fn user_main(mut tick: Tick, starting_resources: StartingResources) -> (Tick, Bundle<{ ResourceType::Copper }, 1>) {
     let StartingResources { iron } = starting_resources;
 
-    let mut furnace = Furnace::<CopperSmelting>::build(&tick, iron);
+    let mut furnace = Furnace::build(&tick, CopperSmelting, iron);
 
     let mut copper_ore = Resource::empty();
 

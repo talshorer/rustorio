@@ -20,7 +20,7 @@ fn user_main(
 
     let StartingResources { iron } = starting_resources;
 
-    let mut furnace = Furnace::<IronSmelting>::build(&tick, iron);
+    let mut furnace = Furnace::build(&tick, IronSmelting, iron);
 
     let iron_ore = rustorio::mine_iron::<500>(&mut tick);
 
@@ -35,7 +35,7 @@ fn user_main(
     let mut iron = furnace.empty_output(&tick);
     println!("Iron ingots produced: {}", iron.amount());
 
-    let mut furnace = furnace.change_recipe::<CopperSmelting>().unwrap();
+    let mut furnace = furnace.change_recipe(CopperSmelting).unwrap();
 
     furnace.add_input(&tick, copper_ore.bundle::<200>().unwrap());
     tick.advance_until(|tick| furnace.cur_input(tick) == 0);
@@ -43,7 +43,7 @@ fn user_main(
     let mut copper = furnace.empty_output(&tick);
     println!("Copper ingots produced: {}", copper.amount());
 
-    let mut assembler = Assembler::<PointRecipe>::build(&tick, iron.bundle().unwrap(), copper.bundle().unwrap());
+    let mut assembler = Assembler::build(&tick, PointRecipe, iron.bundle().unwrap(), copper.bundle().unwrap());
     println!("Iron left: {}", iron.amount());
     println!("Copper left: {}", copper.amount());
 
