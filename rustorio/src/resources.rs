@@ -11,11 +11,22 @@ use std::{
 /// Used as a const generic parameter for both [`Resource`](Resource) and [`Bundle`](Bundle).
 #[derive(ConstParamTy, Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ResourceType {
+    /// Used to win the game in some game modes.
     Point,
+    /// Raw iron ore mined from the ground.
+    /// Can be smelted into iron ingots using a [`Furnace`](crate::buildings::Furnace).
     IronOre,
+    /// Refined iron ingots produced by smelting iron ore.
+    /// Used in various recipes and to build structures.
     Iron,
+    /// Raw copper ore mined from the ground.
+    /// Can be smelted into copper ingots using a [`Furnace`](crate::buildings::Furnace).
     CopperOre,
+    /// Refined copper ingots produced by smelting copper ore.
+    /// Used in various recipes and to build structures.
     Copper,
+    /// Red science packs used for research.
+    RedScience,
 }
 
 /// Holds an arbitrary amount of a resource.

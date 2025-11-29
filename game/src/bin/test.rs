@@ -1,7 +1,8 @@
 use rustorio::{
     buildings::{Assembler, Furnace},
     gamemodes,
-    recipes::{CopperSmelting, IronSmelting, PointRecipe},
+    recipes::{CopperSmelting, IronSmelting, RedScienceRecipe},
+    research::Research,
 };
 
 type GameMode = gamemodes::Standard;
@@ -18,7 +19,7 @@ fn user_main(
 ) -> (rustorio::Tick, rustorio::Bundle<{ rustorio::ResourceType::Point }, 10>) {
     tick.log(false);
 
-    let StartingResources { iron } = starting_resources;
+    let StartingResources { iron, points_research } = starting_resources;
 
     let mut furnace = Furnace::build(&tick, IronSmelting, iron);
 
@@ -38,18 +39,36 @@ fn user_main(
     let mut furnace = furnace.change_recipe(CopperSmelting).unwrap();
 
     furnace.add_input(&tick, copper_ore.bundle::<200>().unwrap());
-    tick.advance_until(|tick| furnace.cur_input(tick) == 0);
+    tick.advance_until(|tick| furnace.cur_input(tick) == 0, u64::MAX);
 
     let mut copper = furnace.empty_output(&tick);
     println!("Copper ingots produced: {}", copper.amount());
 
-    let mut assembler = Assembler::build(&tick, PointRecipe, iron.bundle().unwrap(), copper.bundle().unwrap());
+    let mut assembler = Assembler::build(
+        &tick,
+        RedScienceRecipe,
+        iron.bundle().unwrap(),
+        copper.bundle().unwrap(),
+    );
     println!("Iron left: {}", iron.amount());
     println!("Copper left: {}", copper.amount());
 
-    assembler.add_input1(&tick, iron.bundle::<235>().unwrap());
-    assembler.add_input2(&tick, copper.bundle::<90>().unwrap());
-    tick.advance_until(|tick| assembler.cur_output(tick) >= 10);
+    assembler.add_input1(&tick, iron.bundle::<5>().unwrap());
+    assembler.add_input2(&tick, copper.bundle::<5>().unwrap());
+    tick.advance_until(|tick| assembler.cur_output(tick) >= 5, 100);
+    let red_science = assembler.take_output_bundle(&tick).unwrap();
+
+    let points_recipe = points_research.research(red_science);
+    println!("Points researched!");
+
+    println!("Iron left: {}", iron.amount());
+    println!("Copper left: {}", copper.amount());
+
+    let mut assembler = assembler.change_recipe(points_recipe).unwrap();
+
+    assembler.add_input1(&tick, iron);
+    assembler.add_input2(&tick, copper);
+    tick.advance_until(|tick| assembler.cur_output(tick) >= 10, 10000);
 
     let points = assembler.take_output_bundle(&tick).unwrap();
     (tick, points)

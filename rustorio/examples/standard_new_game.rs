@@ -14,7 +14,7 @@ fn main() {
 }
 
 fn user_main(mut tick: Tick, starting_resources: StartingResources) -> (Tick, Bundle<{ ResourceType::Point }, 10>) {
-    let StartingResources { iron } = starting_resources;
+    let StartingResources { iron, points_research } = starting_resources;
 
     todo!("Return the `tick` and the victory resources to win the game!")
 }

@@ -51,17 +51,20 @@ impl Tick {
         }
     }
 
-    /// Advances the game until the specified condition is met.
+    /// Advances the game until the specified condition is met or the maximum number of ticks has passed.
+    /// Returns `true` if the condition was met, or `false` if the maximum number of ticks was reached first.
     ///
     /// By default prints the current tick number to the console every tick.
     /// If you want to disable this, use the [`log`](Tick::log) method.
-    pub fn advance_until<F>(&mut self, mut condition: F)
+    pub fn advance_until<F>(&mut self, mut condition: F, max_ticks: u64) -> bool
     where
         F: FnMut(&Tick) -> bool,
     {
-        while !condition(self) {
+        let start_tick = self.tick;
+        while !condition(self) && self.tick - start_tick < max_ticks {
             self.advance();
         }
+        self.tick - start_tick < max_ticks
     }
 
     /// Returns the current tick number.

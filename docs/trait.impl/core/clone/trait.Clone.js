@@ -1,9 +1,9 @@
 (function() {
-    var implementors = Object.fromEntries([["rustorio",[["impl <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html\" title=\"trait core::clone::Clone\">Clone</a> for <a class=\"enum\" href=\"rustorio/enum.ResourceType.html\" title=\"enum rustorio::ResourceType\">ResourceType</a>"]]]]);
+    var implementors = Object.fromEntries([["rustorio",[["impl <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html\" title=\"trait core::clone::Clone\">Clone</a> for <a class=\"enum\" href=\"rustorio/enum.ResourceType.html\" title=\"enum rustorio::ResourceType\">ResourceType</a>"],["impl <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html\" title=\"trait core::clone::Clone\">Clone</a> for <a class=\"struct\" href=\"rustorio/recipes/struct.CopperSmelting.html\" title=\"struct rustorio::recipes::CopperSmelting\">CopperSmelting</a>"],["impl <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html\" title=\"trait core::clone::Clone\">Clone</a> for <a class=\"struct\" href=\"rustorio/recipes/struct.IronSmelting.html\" title=\"struct rustorio::recipes::IronSmelting\">IronSmelting</a>"],["impl <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html\" title=\"trait core::clone::Clone\">Clone</a> for <a class=\"struct\" href=\"rustorio/recipes/struct.PointRecipe.html\" title=\"struct rustorio::recipes::PointRecipe\">PointRecipe</a>"],["impl <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html\" title=\"trait core::clone::Clone\">Clone</a> for <a class=\"struct\" href=\"rustorio/recipes/struct.RedScienceRecipe.html\" title=\"struct rustorio::recipes::RedScienceRecipe\">RedScienceRecipe</a>"]]]]);
     if (window.register_implementors) {
         window.register_implementors(implementors);
     } else {
         window.pending_implementors = implementors;
     }
 })()
-//{"start":57,"fragment_lengths":[276]}
+//{"start":57,"fragment_lengths":[1431]}

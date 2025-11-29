@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["CopperSmelting","IronSmelting","PointRecipe"],"trait":["AssemblerRecipe","FurnaceRecipe"]};
+window.SIDEBAR_ITEMS = {"struct":["CopperSmelting","IronSmelting","PointRecipe","RedScienceRecipe"],"trait":["AssemblerRecipe","FurnaceRecipe"]};

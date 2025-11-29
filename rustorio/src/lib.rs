@@ -57,6 +57,7 @@
 pub mod buildings;
 pub mod gamemodes;
 pub mod recipes;
+pub mod research;
 mod resources;
 mod tick;
 

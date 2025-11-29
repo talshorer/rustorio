@@ -3,7 +3,7 @@
 <a href=#3 id=3 data-nosnippet>3</a>//! [github]: https://img.shields.io/badge/github-8da0cb?style=for-the-badge&amp;labelColor=555555&amp;logo=github
 <a href=#4 id=4 data-nosnippet>4</a>//! [crates-io]: https://img.shields.io/badge/crates.io-fc8d62?style=for-the-badge&amp;labelColor=555555&amp;logo=rust
 <a href=#5 id=5 data-nosnippet>5</a>//!
-<a href=#6 id=6 data-nosnippet>6</a>//! The first game written _and played_ entirely in Rust. Not just do you play by
+<a href=#6 id=6 data-nosnippet>6</a>//! The first game written _and played_ entirely in Rust's type system. Not just do you play by
 <a href=#7 id=7 data-nosnippet>7</a>//! writing Rust code, the rules of the game are enforced by the Rust compiler! If
 <a href=#8 id=8 data-nosnippet>8</a>//! you can write the program so it compiles and doesn't panic, you win!
 <a href=#9 id=9 data-nosnippet>9</a>//!
@@ -12,7 +12,7 @@
 <a href=#12 id=12 data-nosnippet>12</a>//! 1. Install [Rust](https://www.rust-lang.org/tools/install). Specifically it's
 <a href=#13 id=13 data-nosnippet>13</a>//!    important to have the entire rustup toolchain and cargo, all of which you get
 <a href=#14 id=14 data-nosnippet>14</a>//!    automatically by following the instructions in the link.
-<a href=#15 id=15 data-nosnippet>15</a>//! 2. Install `rustorio` by running `cargo install rustorio`.
+<a href=#15 id=15 data-nosnippet>15</a>//! 2. Install `rustorio` by running `cargo +nightly install rustorio`.
 <a href=#16 id=16 data-nosnippet>16</a>//! 3. Set up a new Rustorio project by running `rustorio setup &lt;path&gt;`, where
 <a href=#17 id=17 data-nosnippet>17</a>//!    `&lt;path&gt;` is the directory you want to create the project in (defaults to
 <a href=#18 id=18 data-nosnippet>18</a>//!    '.').
@@ -31,7 +31,7 @@
 <a href=#31 id=31 data-nosnippet>31</a>//! ## Rules
 <a href=#32 id=32 data-nosnippet>32</a>//!
 <a href=#33 id=33 data-nosnippet>33</a>//! The rules are enforced by the compiler. Only thing I'd say is to not remove the
-<a href=#34 id=34 data-nosnippet>34</a>//! `#![deny(unsafe_code)]` at the top of the `main.rs` file, as using unsafe code
+<a href=#34 id=34 data-nosnippet>34</a>//! `#![forbid(unsafe_code)]` at the top of the `main.rs` file, as using unsafe code
 <a href=#35 id=35 data-nosnippet>35</a>//! can bypass most of what the compiler enforces. If you think you've found a way
 <a href=#36 id=36 data-nosnippet>36</a>//! to cheat the game that isn't caught by the compiler, please file an issue! Part
 <a href=#37 id=37 data-nosnippet>37</a>//! of my interest in this project is whether I can actually rule out all possible
@@ -57,51 +57,52 @@
 <a href=#57 id=57 data-nosnippet>57</a></span><span class="kw">pub mod </span>buildings;
 <a href=#58 id=58 data-nosnippet>58</a><span class="kw">pub mod </span>gamemodes;
 <a href=#59 id=59 data-nosnippet>59</a><span class="kw">pub mod </span>recipes;
-<a href=#60 id=60 data-nosnippet>60</a><span class="kw">mod </span>resources;
-<a href=#61 id=61 data-nosnippet>61</a><span class="kw">mod </span>tick;
-<a href=#62 id=62 data-nosnippet>62</a>
-<a href=#63 id=63 data-nosnippet>63</a><span class="kw">use </span>std::sync::Once;
-<a href=#64 id=64 data-nosnippet>64</a>
-<a href=#65 id=65 data-nosnippet>65</a><span class="kw">pub use </span>resources::{Bundle, Resource, ResourceType};
-<a href=#66 id=66 data-nosnippet>66</a><span class="kw">pub use </span>tick::Tick;
-<a href=#67 id=67 data-nosnippet>67</a>
-<a href=#68 id=68 data-nosnippet>68</a><span class="kw">use </span><span class="kw">crate</span>::gamemodes::{GameMode, StartingResources};
-<a href=#69 id=69 data-nosnippet>69</a>
-<a href=#70 id=70 data-nosnippet>70</a><span class="kw">static </span>ONCE: Once = Once::new();
-<a href=#71 id=71 data-nosnippet>71</a>
-<a href=#72 id=72 data-nosnippet>72</a><span class="doccomment">/// Runs your play. If it is run multiple times, it will panic. This is to prevent using multiple threads to cheat.
-<a href=#73 id=73 data-nosnippet>73</a></span><span class="kw">pub fn </span>play&lt;G: GameMode&gt;(main: <span class="kw">fn</span>(Tick, G::StartingResources) -&gt; (Tick, G::VictoryResources)) -&gt; ! {
-<a href=#74 id=74 data-nosnippet>74</a>    <span class="kw">let </span><span class="kw-2">mut </span>call_once_ran = <span class="bool-val">false</span>;
-<a href=#75 id=75 data-nosnippet>75</a>    ONCE.call_once(|| call_once_ran = <span class="bool-val">true</span>);
-<a href=#76 id=76 data-nosnippet>76</a>    <span class="kw">if </span>!call_once_ran {
-<a href=#77 id=77 data-nosnippet>77</a>        <span class="macro">panic!</span>(<span class="string">"play() can only be called once per program execution to prevent cheating via multithreading."</span>);
-<a href=#78 id=78 data-nosnippet>78</a>    }
-<a href=#79 id=79 data-nosnippet>79</a>    <span class="kw">let </span>tick = Tick::start();
-<a href=#80 id=80 data-nosnippet>80</a>    <span class="kw">let </span>start_resources = G::StartingResources::init();
-<a href=#81 id=81 data-nosnippet>81</a>    <span class="kw">let </span>(tick, _points) = main(tick, start_resources);
-<a href=#82 id=82 data-nosnippet>82</a>    <span class="macro">println!</span>(<span class="string">"You won in {} ticks!"</span>, tick.cur());
-<a href=#83 id=83 data-nosnippet>83</a>    std::process::exit(<span class="number">0</span>);
-<a href=#84 id=84 data-nosnippet>84</a>}
-<a href=#85 id=85 data-nosnippet>85</a>
-<a href=#86 id=86 data-nosnippet>86</a><span class="doccomment">/// A bundle of specifically iron ore.
-<a href=#87 id=87 data-nosnippet>87</a></span><span class="kw">pub type </span>IronOreBundle&lt;<span class="kw">const </span>AMOUNT: u32&gt; = Bundle&lt;{ ResourceType::IronOre }, AMOUNT&gt;;
-<a href=#88 id=88 data-nosnippet>88</a>
-<a href=#89 id=89 data-nosnippet>89</a><span class="doccomment">/// Mines iron ore. Takes 2 ticks to mine 1 ore.
-<a href=#90 id=90 data-nosnippet>90</a></span><span class="kw">pub fn </span>mine_iron&lt;<span class="kw">const </span>AMOUNT: u32&gt;(tick: <span class="kw-2">&amp;mut </span>Tick) -&gt; IronOreBundle&lt;AMOUNT&gt; {
-<a href=#91 id=91 data-nosnippet>91</a>    <span class="kw">for _ in </span><span class="number">0</span>..(<span class="number">2 </span>* AMOUNT) {
-<a href=#92 id=92 data-nosnippet>92</a>        tick.next();
-<a href=#93 id=93 data-nosnippet>93</a>    }
-<a href=#94 id=94 data-nosnippet>94</a>    Bundle::new()
-<a href=#95 id=95 data-nosnippet>95</a>}
-<a href=#96 id=96 data-nosnippet>96</a>
-<a href=#97 id=97 data-nosnippet>97</a><span class="doccomment">/// A bundle of specifically copper ore.
-<a href=#98 id=98 data-nosnippet>98</a></span><span class="kw">pub type </span>CopperOreBundle&lt;<span class="kw">const </span>AMOUNT: u32&gt; = Bundle&lt;{ ResourceType::CopperOre }, AMOUNT&gt;;
-<a href=#99 id=99 data-nosnippet>99</a>
-<a href=#100 id=100 data-nosnippet>100</a><span class="doccomment">/// Mines copper ore. Takes 2 ticks to mine 1 ore.
-<a href=#101 id=101 data-nosnippet>101</a></span><span class="kw">pub fn </span>mine_copper&lt;<span class="kw">const </span>AMOUNT: u32&gt;(tick: <span class="kw-2">&amp;mut </span>Tick) -&gt; CopperOreBundle&lt;AMOUNT&gt; {
-<a href=#102 id=102 data-nosnippet>102</a>    <span class="kw">for _ in </span><span class="number">0</span>..(<span class="number">2 </span>* AMOUNT) {
-<a href=#103 id=103 data-nosnippet>103</a>        tick.next();
-<a href=#104 id=104 data-nosnippet>104</a>    }
-<a href=#105 id=105 data-nosnippet>105</a>    Bundle::new()
-<a href=#106 id=106 data-nosnippet>106</a>}
+<a href=#60 id=60 data-nosnippet>60</a><span class="kw">pub mod </span>research;
+<a href=#61 id=61 data-nosnippet>61</a><span class="kw">mod </span>resources;
+<a href=#62 id=62 data-nosnippet>62</a><span class="kw">mod </span>tick;
+<a href=#63 id=63 data-nosnippet>63</a>
+<a href=#64 id=64 data-nosnippet>64</a><span class="kw">use </span>std::sync::Once;
+<a href=#65 id=65 data-nosnippet>65</a>
+<a href=#66 id=66 data-nosnippet>66</a><span class="kw">pub use </span>resources::{Bundle, Resource, ResourceType};
+<a href=#67 id=67 data-nosnippet>67</a><span class="kw">pub use </span>tick::Tick;
+<a href=#68 id=68 data-nosnippet>68</a>
+<a href=#69 id=69 data-nosnippet>69</a><span class="kw">use </span><span class="kw">crate</span>::gamemodes::{GameMode, StartingResources};
+<a href=#70 id=70 data-nosnippet>70</a>
+<a href=#71 id=71 data-nosnippet>71</a><span class="kw">static </span>ONCE: Once = Once::new();
+<a href=#72 id=72 data-nosnippet>72</a>
+<a href=#73 id=73 data-nosnippet>73</a><span class="doccomment">/// Runs your play. If it is run multiple times, it will panic. This is to prevent using multiple threads to cheat.
+<a href=#74 id=74 data-nosnippet>74</a></span><span class="kw">pub fn </span>play&lt;G: GameMode&gt;(main: <span class="kw">fn</span>(Tick, G::StartingResources) -&gt; (Tick, G::VictoryResources)) -&gt; ! {
+<a href=#75 id=75 data-nosnippet>75</a>    <span class="kw">let </span><span class="kw-2">mut </span>call_once_ran = <span class="bool-val">false</span>;
+<a href=#76 id=76 data-nosnippet>76</a>    ONCE.call_once(|| call_once_ran = <span class="bool-val">true</span>);
+<a href=#77 id=77 data-nosnippet>77</a>    <span class="kw">if </span>!call_once_ran {
+<a href=#78 id=78 data-nosnippet>78</a>        <span class="macro">panic!</span>(<span class="string">"play() can only be called once per program execution to prevent cheating via multithreading."</span>);
+<a href=#79 id=79 data-nosnippet>79</a>    }
+<a href=#80 id=80 data-nosnippet>80</a>    <span class="kw">let </span>tick = Tick::start();
+<a href=#81 id=81 data-nosnippet>81</a>    <span class="kw">let </span>start_resources = G::StartingResources::init();
+<a href=#82 id=82 data-nosnippet>82</a>    <span class="kw">let </span>(tick, _points) = main(tick, start_resources);
+<a href=#83 id=83 data-nosnippet>83</a>    <span class="macro">println!</span>(<span class="string">"You won in {} ticks!"</span>, tick.cur());
+<a href=#84 id=84 data-nosnippet>84</a>    std::process::exit(<span class="number">0</span>);
+<a href=#85 id=85 data-nosnippet>85</a>}
+<a href=#86 id=86 data-nosnippet>86</a>
+<a href=#87 id=87 data-nosnippet>87</a><span class="doccomment">/// A bundle of specifically iron ore.
+<a href=#88 id=88 data-nosnippet>88</a></span><span class="kw">pub type </span>IronOreBundle&lt;<span class="kw">const </span>AMOUNT: u32&gt; = Bundle&lt;{ ResourceType::IronOre }, AMOUNT&gt;;
+<a href=#89 id=89 data-nosnippet>89</a>
+<a href=#90 id=90 data-nosnippet>90</a><span class="doccomment">/// Mines iron ore. Takes 2 ticks to mine 1 ore.
+<a href=#91 id=91 data-nosnippet>91</a></span><span class="kw">pub fn </span>mine_iron&lt;<span class="kw">const </span>AMOUNT: u32&gt;(tick: <span class="kw-2">&amp;mut </span>Tick) -&gt; IronOreBundle&lt;AMOUNT&gt; {
+<a href=#92 id=92 data-nosnippet>92</a>    tick.advance_by(<span class="number">2 </span>* AMOUNT <span class="kw">as </span>u64);
+<a href=#93 id=93 data-nosnippet>93</a>    Bundle::new()
+<a href=#94 id=94 data-nosnippet>94</a>}
+<a href=#95 id=95 data-nosnippet>95</a>
+<a href=#96 id=96 data-nosnippet>96</a><span class="doccomment">/// A bundle of specifically copper ore.
+<a href=#97 id=97 data-nosnippet>97</a></span><span class="kw">pub type </span>CopperOreBundle&lt;<span class="kw">const </span>AMOUNT: u32&gt; = Bundle&lt;{ ResourceType::CopperOre }, AMOUNT&gt;;
+<a href=#98 id=98 data-nosnippet>98</a>
+<a href=#99 id=99 data-nosnippet>99</a><span class="doccomment">/// Mines copper ore. Takes 2 ticks to mine 1 ore.
+<a href=#100 id=100 data-nosnippet>100</a></span><span class="kw">pub fn </span>mine_copper&lt;<span class="kw">const </span>AMOUNT: u32&gt;(tick: <span class="kw-2">&amp;mut </span>Tick) -&gt; CopperOreBundle&lt;AMOUNT&gt; {
+<a href=#101 id=101 data-nosnippet>101</a>    tick.advance_by(<span class="number">2 </span>* AMOUNT <span class="kw">as </span>u64);
+<a href=#102 id=102 data-nosnippet>102</a>    Bundle::new()
+<a href=#103 id=103 data-nosnippet>103</a>}
+<a href=#104 id=104 data-nosnippet>104</a>
+<a href=#105 id=105 data-nosnippet>105</a><span class="kw">mod </span>sealed {
+<a href=#106 id=106 data-nosnippet>106</a>    <span class="kw">pub trait </span>Sealed {}
+<a href=#107 id=107 data-nosnippet>107</a>}
 </code></pre></div></section></main></body></html>
