@@ -153,6 +153,17 @@ impl<const RESOURCE_TYPE: ResourceType, const AMOUNT: u32> Bundle<RESOURCE_TYPE,
         AMOUNT
     }
 
+    pub fn split<const AMOUNT1: u32, const AMOUNT2: u32>(
+        self,
+    ) -> (Bundle<RESOURCE_TYPE, AMOUNT1>, Bundle<RESOURCE_TYPE, AMOUNT2>)
+    where
+        // Enforce that AMOUNT1 + AMOUNT2 == AMOUNT at compile time
+        [(); AMOUNT as usize - (AMOUNT1 as usize + AMOUNT2 as usize)]:,
+        [(); (AMOUNT1 as usize + AMOUNT2 as usize) - AMOUNT as usize]:,
+    {
+        (Bundle::new(), Bundle::new())
+    }
+
     /// Converts this [`Bundle`](Bundle) into a [`Resource`](Resource) with the same resource type and amount.
     pub fn to_resource(self) -> Resource<RESOURCE_TYPE> {
         Resource { amount: AMOUNT }
