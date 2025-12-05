@@ -13,14 +13,10 @@ fn main() {
     rustorio::play::<GameMode>(user_main);
 }
 
-fn user_main(mut tick: Tick, starting_resources: StartingResources) -> (Tick, Bundle<{ ResourceType::Copper }, 1>) {
-    let StartingResources { iron } = starting_resources;
+fn user_main(mut tick: Tick, starting_resources: StartingResources) -> (Tick, Bundle<{ ResourceType::Copper }, 4>) {
+    let StartingResources { iron, guide } = starting_resources;
 
-    todo!("Use the iron to create a smelter, mine some copper ore, and smelt it into copper ingots to win the game.")
-    // For more information on building a furnace, see https://docs.rs/rustorio/latest/rustorio/buildings/struct.Furnace.html
-    // To mine copper ore, see https://docs.rs/rustorio/latest/rustorio/fn.mine_copper.html
-
-    // To win, simply return the `Tick` and a `Bundle` containing 1 copper ingot.
-    // To get a `Bundle` containing copper ingots, you can either take it directly from a furnace using `Furnace::take_output_bundle`,
-    // or extract it from a `Resource` using `Resource::bundle`.
+    // To start, run the game using `rustorio play tutorial` (or whatever this save is called), and follow the hint.
+    // If you get stuck, try giving the guide other objects you've found, like the `tick` object.
+    guide.hint(iron)
 }

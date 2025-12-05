@@ -1,4 +1,4 @@
-use crate::{Bundle, ResourceType, research::PointsResearch};
+use crate::{Bundle, ResourceType, guide::Guide, research::PointsResearch};
 
 pub(crate) trait StartingResources {
     fn init() -> Self;
@@ -16,11 +16,15 @@ pub trait GameMode {
 /// Starting resources for the tutorial game mode.
 pub struct TutorialStartingResources {
     pub iron: Bundle<{ ResourceType::Iron }, 10>,
+    pub guide: Guide,
 }
 
 impl StartingResources for TutorialStartingResources {
     fn init() -> Self {
-        Self { iron: Bundle::new() }
+        Self {
+            iron: Bundle::new(),
+            guide: Guide,
+        }
     }
 }
 
@@ -29,7 +33,7 @@ pub struct Tutorial;
 
 impl GameMode for Tutorial {
     type StartingResources = TutorialStartingResources;
-    type VictoryResources = Bundle<{ ResourceType::Copper }, 1>;
+    type VictoryResources = Bundle<{ ResourceType::Copper }, 4>;
 }
 
 /// Starting resources for the standard game mode. Includes 10 iron and the ability to research points.
