@@ -39,11 +39,11 @@ Part of my interest in this project is seeing how close we can get to rule out a
 cheating vectors using only the Rust compiler. So I'd love to hear about any ways to cheat.
 ## Help
 Documentation for the Rustorio library can be found
-[here](https://albertsgarde.github.io/rustorio/rustorio). A good place to start
+[here](https://docs.rs/rustorio/latest/rustorio/). A good place to start
 is to build a
-[furnace](https://albertsgarde.github.io/rustorio/rustorio/buildings/struct.Furnace.html)
+[furnace](https://docs.rs/rustorio/latest/rustorio//buildings/struct.Furnace.html)
 and start
-[mining](https://albertsgarde.github.io/rustorio/rustorio/fn.mine_iron.html) and
+[mining](hhttps://docs.rs/rustorio/latest/rustorio//fn.mine_iron.html) and
 smelting iron. Alternatively, you can work backwards by looking at the
-[recipe](https://albertsgarde.github.io/rustorio/rustorio/recipes/struct.PointRecipe.html)
+[recipe](https://docs.rs/rustorio/latest/rustorio//recipes/struct.PointRecipe.html)
 for points to figure out how to get them.
