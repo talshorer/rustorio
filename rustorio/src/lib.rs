@@ -11,7 +11,7 @@ pub mod research;
 mod resources;
 mod tick;
 
-use std::sync::Once;
+use std::{fmt::Display, sync::Once};
 
 pub use resources::{Bundle, Resource, ResourceType};
 pub use tick::Tick;
@@ -50,6 +50,22 @@ pub type CopperOreBundle<const AMOUNT: u32> = Bundle<{ ResourceType::CopperOre }
 pub fn mine_copper<const AMOUNT: u32>(tick: &mut Tick) -> CopperOreBundle<AMOUNT> {
     tick.advance_by(2 * AMOUNT as u64);
     Bundle::new()
+}
+
+#[derive(Debug, Clone)]
+pub struct InsufficientResourceError<const RESOURCE_TYPE: ResourceType> {
+    pub requested_amount: u32,
+    pub available_amount: u32,
+}
+
+impl<const RESOURCE_TYPE: ResourceType> Display for InsufficientResourceError<RESOURCE_TYPE> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "Insufficient {RESOURCE_TYPE:?}: requested {}, but only {} available",
+            self.requested_amount, self.available_amount
+        )
+    }
 }
 
 mod sealed {

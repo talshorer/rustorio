@@ -7,6 +7,8 @@ use std::{
     ops::{Add, AddAssign},
 };
 
+use crate::InsufficientResourceError;
+
 /// The different types of resources in the game.
 /// Used as a const generic parameter for both [`Resource`](Resource) and [`Bundle`](Bundle).
 #[derive(ConstParamTy, Debug, Clone, Copy, PartialEq, Eq)]
@@ -64,12 +66,15 @@ impl<const RESOURCE_TYPE: ResourceType> Resource<RESOURCE_TYPE> {
 
     /// Removes a specified amount of resources from this [`Resource`](Resource) and returns them as a new [`Resource`](Resource).
     /// If there are insufficient resources in the [`Resource`](Resource), it returns `None`.
-    pub fn split_off(&mut self, amount: u32) -> Option<Self> {
+    pub fn split_off(&mut self, amount: u32) -> Result<Self, InsufficientResourceError<RESOURCE_TYPE>> {
         if let Some(remaining) = self.amount.checked_sub(amount) {
             self.amount = remaining;
-            Some(Resource { amount })
+            Ok(Resource { amount })
         } else {
-            None
+            Err(InsufficientResourceError {
+                requested_amount: amount,
+                available_amount: self.amount,
+            })
         }
     }
 
@@ -79,12 +84,15 @@ impl<const RESOURCE_TYPE: ResourceType> Resource<RESOURCE_TYPE> {
     }
 
     /// Takes a specified amount of resources from this [`Resource`](Resource) and puts it into a [`Bundle`](Bundle).
-    pub fn bundle<const AMOUNT: u32>(&mut self) -> Option<Bundle<RESOURCE_TYPE, AMOUNT>> {
+    pub fn bundle<const AMOUNT: u32>(&mut self) -> Result<Bundle<RESOURCE_TYPE, AMOUNT>, InsufficientResourceError<RESOURCE_TYPE>> {
         if let Some(remaining) = self.amount.checked_sub(AMOUNT) {
             self.amount = remaining;
-            Some(Bundle { dummy: PhantomData })
+            Ok(Bundle::new())
         } else {
-            None
+            Err(InsufficientResourceError {
+                requested_amount: AMOUNT,
+                available_amount: self.amount,
+            })
         }
     }
 }
