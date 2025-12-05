@@ -59,9 +59,13 @@ impl AssemblerRecipe for PointRecipe {
 
 /// Any recipe that implements this trait can be used in a [`Furnace`](crate::buildings::Furnace).
 pub trait FurnaceRecipe: Debug + Sealed {
+    /// The type of resource consumed by this recipe.
     const INPUT: ResourceType;
+    /// The amount of the input resource consumed by this recipe.
     const INPUT_AMOUNT: u32;
+    /// The type of resource produced by this recipe.
     const OUTPUT: ResourceType;
+    /// The amount of the output resource produced by this recipe.
     const OUTPUT_AMOUNT: u32;
     /// The time (in ticks) it takes to complete this recipe.
     /// Even though this is only enforced at runtime, this must not be 0.
