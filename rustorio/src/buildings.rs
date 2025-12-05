@@ -16,6 +16,12 @@ use crate::{
 };
 
 /// The assembler is used for recipes that require two different inputs to produce an output.
+///
+/// To use, first build the assembler using `Assembler::build`, providing the desired recipe and the required resources.
+/// Then, add inputs using `add_input1` and `add_input2`.
+/// The assembler will automatically process the inputs over time, which can be tracked using the `Tick`.
+/// Outputs can be extracted using `take_output` or similar.
+/// If you want to change the recipe, use `change_recipe`, but ensure the assembler is empty first.
 #[derive(Debug)]
 pub struct Assembler<R: AssemblerRecipe> {
     input1_amount: u32,
@@ -26,9 +32,9 @@ pub struct Assembler<R: AssemblerRecipe> {
     recipe: PhantomData<R>,
 }
 
-/// Input [`Bundle`](Bundle) required to build an assembler.
+/// Input [`Bundle`] required to build an assembler.
 type AssemblerIronInput = Bundle<{ ResourceType::Iron }, 15>;
-/// Input [`Bundle`](Bundle) required to build an assembler.
+/// Input [`Bundle`] required to build an assembler.
 type AssemblerCopperInput = Bundle<{ ResourceType::Copper }, 10>;
 
 impl<R: AssemblerRecipe> Assembler<R> {
@@ -104,19 +110,19 @@ impl<R: AssemblerRecipe> Assembler<R> {
         self.output_amount
     }
 
-    /// Consumes a [`Resource`](Resource) and puts the contained resources into the assembler as input resource 1.
+    /// Consumes a [`Resource`] and puts the contained resources into the assembler as input resource 1.
     pub fn add_input1(&mut self, tick: &Tick, ore: impl Into<Resource<{ R::INPUT1 }>>) {
         self.tick(tick);
         self.input1_amount += ore.into().amount();
     }
 
-    /// Consumes a [`Resource`](Resource) and puts the contained resources into the assembler as input resource 2.
+    /// Consumes a [`Resource`] and puts the contained resources into the assembler as input resource 2.
     pub fn add_input2(&mut self, tick: &Tick, ore: impl Into<Resource<{ R::INPUT2 }>>) {
         self.tick(tick);
         self.input2_amount += ore.into().amount();
     }
 
-    /// Takes a specified amount of input resource 1 from the assembler and puts it into a [`Resource`](Resource).
+    /// Takes a specified amount of input resource 1 from the assembler and puts it into a [`Resource`].
     pub fn take_input1(&mut self, tick: &Tick, amount: u32) -> Option<Resource<{ R::INPUT1 }>> {
         self.tick(tick);
         if self.input1_amount >= amount {
@@ -127,7 +133,7 @@ impl<R: AssemblerRecipe> Assembler<R> {
         }
     }
 
-    /// Takes a specified amount of input resource 1 from the assembler and puts it into a [`Bundle`](Bundle).
+    /// Takes a specified amount of input resource 1 from the assembler and puts it into a [`Bundle`].
     pub fn take_input1_bundle<const AMOUNT: u32>(&mut self, tick: &Tick) -> Option<Bundle<{ R::INPUT1 }, AMOUNT>> {
         self.tick(tick);
         if self.input1_amount >= AMOUNT {
@@ -138,7 +144,7 @@ impl<R: AssemblerRecipe> Assembler<R> {
         }
     }
 
-    /// Takes all input resource 1 currently in the assembler and puts it into a [`Resource`](Resource).
+    /// Takes all input resource 1 currently in the assembler and puts it into a [`Resource`].
     pub fn empty_input1(&mut self, tick: &Tick) -> Resource<{ R::INPUT1 }> {
         self.tick(tick);
         let amount = self.input1_amount;
@@ -146,7 +152,7 @@ impl<R: AssemblerRecipe> Assembler<R> {
         Resource { amount }
     }
 
-    /// Takes a specified amount of input resource 2 from the assembler and puts it into a [`Resource`](Resource).
+    /// Takes a specified amount of input resource 2 from the assembler and puts it into a [`Resource`].
     pub fn take_input2(&mut self, tick: &Tick, amount: u32) -> Option<Resource<{ R::INPUT2 }>> {
         self.tick(tick);
         if self.input2_amount >= amount {
@@ -157,7 +163,7 @@ impl<R: AssemblerRecipe> Assembler<R> {
         }
     }
 
-    /// Takes a specified amount of input resource 2 from the assembler and puts it into a [`Bundle`](Bundle).
+    /// Takes a specified amount of input resource 2 from the assembler and puts it into a [`Bundle`].
     pub fn take_input2_bundle<const AMOUNT: u32>(&mut self, tick: &Tick) -> Option<Bundle<{ R::INPUT2 }, AMOUNT>> {
         self.tick(tick);
         if self.input2_amount >= AMOUNT {
@@ -168,7 +174,7 @@ impl<R: AssemblerRecipe> Assembler<R> {
         }
     }
 
-    /// Takes all input resource 2 currently in the assembler and puts it into a [`Resource`](Resource).
+    /// Takes all input resource 2 currently in the assembler and puts it into a [`Resource`].
     pub fn empty_input2(&mut self, tick: &Tick) -> Resource<{ R::INPUT2 }> {
         self.tick(tick);
         let amount = self.input2_amount;
@@ -176,7 +182,7 @@ impl<R: AssemblerRecipe> Assembler<R> {
         Resource { amount }
     }
 
-    /// Takes a specified amount of output resources from the assembler and puts it into a [`Resource`](Resource).
+    /// Takes a specified amount of output resources from the assembler and puts it into a [`Resource`].
     pub fn take_output(&mut self, tick: &Tick, amount: u32) -> Option<Resource<{ R::OUTPUT }>> {
         self.tick(tick);
         if self.output_amount >= amount {
@@ -187,7 +193,7 @@ impl<R: AssemblerRecipe> Assembler<R> {
         }
     }
 
-    /// Takes a specified amount of output resources from the assembler and puts it into a [`Bundle`](Bundle).
+    /// Takes a specified amount of output resources from the assembler and puts it into a [`Bundle`].
     pub fn take_output_bundle<const AMOUNT: u32>(&mut self, tick: &Tick) -> Option<Bundle<{ R::OUTPUT }, AMOUNT>> {
         self.tick(tick);
         if self.output_amount >= AMOUNT {
@@ -198,7 +204,7 @@ impl<R: AssemblerRecipe> Assembler<R> {
         }
     }
 
-    /// Takes all output resources currently in the assembler and puts it into a [`Resource`](Resource).
+    /// Takes all output resources currently in the assembler and puts it into a [`Resource`].
     pub fn empty_output(&mut self, tick: &Tick) -> Resource<{ R::OUTPUT }> {
         self.tick(tick);
         let amount = self.output_amount;
@@ -208,6 +214,12 @@ impl<R: AssemblerRecipe> Assembler<R> {
 }
 
 /// The furnace is used to smelt ores into base resources.
+///
+/// To use, first build the furnace using `Furnace::build`, providing the desired recipe and the required resources.
+/// Then, add inputs using `add_input`.
+/// The furnace will automatically process the inputs over time, which can be tracked using the `Tick`.
+/// Outputs can be extracted using `take_output` or similar.
+/// If you want to change the recipe, use `change_recipe`, but ensure the furnace is empty first.
 #[derive(Debug)]
 pub struct Furnace<R: FurnaceRecipe> {
     input_amount: u32,
@@ -217,7 +229,7 @@ pub struct Furnace<R: FurnaceRecipe> {
     recipe: PhantomData<R>,
 }
 
-/// Input [`Bundle`](Bundle) required to build a furnace.
+/// Input [`Bundle`] required to build a furnace.
 type FurnaceIronInput = Bundle<{ ResourceType::Iron }, 10>;
 
 impl<R: FurnaceRecipe> Furnace<R> {
@@ -279,13 +291,13 @@ impl<R: FurnaceRecipe> Furnace<R> {
         self.output_amount
     }
 
-    /// Consumes a [`Resource`](Resource) and puts the contained resources into the furnace.
+    /// Consumes a [`Resource`] and puts the contained resources into the furnace.
     pub fn add_input(&mut self, tick: &Tick, ore: impl Into<Resource<{ R::INPUT }>>) {
         self.tick(tick);
         self.input_amount += ore.into().amount();
     }
 
-    /// Takes a specified amount of input resources from the furnace and puts it into a [`Resource`](Resource).
+    /// Takes a specified amount of input resources from the furnace and puts it into a [`Resource`].
     pub fn take_input(&mut self, tick: &Tick, amount: u32) -> Option<Resource<{ R::INPUT }>> {
         self.tick(tick);
         if self.input_amount >= amount {
@@ -296,7 +308,7 @@ impl<R: FurnaceRecipe> Furnace<R> {
         }
     }
 
-    /// Takes a specified amount of input resources from the furnace and puts it into a [`Bundle`](Bundle).
+    /// Takes a specified amount of input resources from the furnace and puts it into a [`Bundle`].
     pub fn take_input_bundle<const AMOUNT: u32>(&mut self, tick: &Tick) -> Option<Bundle<{ R::INPUT }, AMOUNT>> {
         self.tick(tick);
         if self.input_amount >= AMOUNT {
@@ -307,7 +319,7 @@ impl<R: FurnaceRecipe> Furnace<R> {
         }
     }
 
-    /// Takes all input resources currently in the furnace and puts it into a [`Resource`](Resource).
+    /// Takes all input resources currently in the furnace and puts it into a [`Resource`].
     pub fn empty_input(&mut self, tick: &Tick) -> Resource<{ R::INPUT }> {
         self.tick(tick);
         let amount = self.input_amount;
@@ -315,7 +327,7 @@ impl<R: FurnaceRecipe> Furnace<R> {
         Resource { amount }
     }
 
-    /// Takes a specified amount of output resources from the furnace and puts it into a [`Resource`](Resource).
+    /// Takes a specified amount of output resources from the furnace and puts it into a [`Resource`].
     pub fn take_output(&mut self, tick: &Tick, amount: u32) -> Option<Resource<{ R::OUTPUT }>> {
         self.tick(tick);
         if self.output_amount >= amount {
@@ -326,7 +338,7 @@ impl<R: FurnaceRecipe> Furnace<R> {
         }
     }
 
-    /// Takes a specified amount of output resources from the furnace and puts it into a [`Bundle`](Bundle).
+    /// Takes a specified amount of output resources from the furnace and puts it into a [`Bundle`].
     pub fn take_output_bundle<const AMOUNT: u32>(&mut self, tick: &Tick) -> Option<Bundle<{ R::OUTPUT }, AMOUNT>> {
         self.tick(tick);
         if self.output_amount >= AMOUNT {
@@ -337,7 +349,7 @@ impl<R: FurnaceRecipe> Furnace<R> {
         }
     }
 
-    /// Takes all output resources currently in the furnace and puts it into a [`Resource`](Resource).
+    /// Takes all output resources currently in the furnace and puts it into a [`Resource`].
     pub fn empty_output(&mut self, tick: &Tick) -> Resource<{ R::OUTPUT }> {
         self.tick(tick);
         let amount = self.output_amount;
