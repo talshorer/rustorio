@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"struct":["Standard","StandardStartingResources","Tutorial","TutorialStartingResources"],"trait":["GameMode"]};

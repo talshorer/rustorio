@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"enum":["ResourceType"],"fn":["mine_copper","mine_iron","play"],"mod":["buildings","gamemodes","recipes","research"],"struct":["Bundle","Resource","Tick"],"type":["CopperOreBundle","IronOreBundle"]};

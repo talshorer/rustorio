@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"struct":["CopperSmelting","IronSmelting","PointRecipe","RedScienceRecipe"],"trait":["AssemblerRecipe","FurnaceRecipe"]};

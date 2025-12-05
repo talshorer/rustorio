@@ -1,7 +1,7 @@
 //! A recipe is a way of turning resources into other resources.
 //! A specific recipe specifies the input and output resources, as well as the time it takes to complete the recipe.
 
-use std::{fmt::Debug, num::NonZeroU64};
+use std::fmt::Debug;
 
 use crate::{ResourceType, sealed::Sealed};
 

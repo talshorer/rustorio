@@ -1,9 +1,0 @@
-(function() {
-    var implementors = Object.fromEntries([["rustorio",[["impl&lt;const RESOURCE_TYPE: <a class=\"enum\" href=\"rustorio/enum.ResourceType.html\" title=\"enum rustorio::ResourceType\">ResourceType</a>&gt; <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/ops/arith/trait.AddAssign.html\" title=\"trait core::ops::arith::AddAssign\">AddAssign</a> for <a class=\"struct\" href=\"rustorio/struct.Resource.html\" title=\"struct rustorio::Resource\">Resource</a>&lt;RESOURCE_TYPE&gt;"],["impl&lt;const RESOURCE_TYPE: <a class=\"enum\" href=\"rustorio/enum.ResourceType.html\" title=\"enum rustorio::ResourceType\">ResourceType</a>, const AMOUNT: <a class=\"primitive\" href=\"https://doc.rust-lang.org/nightly/std/primitive.u32.html\">u32</a>&gt; <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/ops/arith/trait.AddAssign.html\" title=\"trait core::ops::arith::AddAssign\">AddAssign</a>&lt;<a class=\"struct\" href=\"rustorio/struct.Bundle.html\" title=\"struct rustorio::Bundle\">Bundle</a>&lt;RESOURCE_TYPE, AMOUNT&gt;&gt; for <a class=\"struct\" href=\"rustorio/struct.Resource.html\" title=\"struct rustorio::Resource\">Resource</a>&lt;RESOURCE_TYPE&gt;"]]]]);
-    if (window.register_implementors) {
-        window.register_implementors(implementors);
-    } else {
-        window.pending_implementors = implementors;
-    }
-})()
-//{"start":57,"fragment_lengths":[1144]}
