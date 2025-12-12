@@ -149,6 +149,8 @@ pub struct Bundle<const RESOURCE_TYPE: ResourceType, const AMOUNT: u32> {
 }
 
 impl<const RESOURCE_TYPE: ResourceType, const AMOUNT: u32> Bundle<RESOURCE_TYPE, AMOUNT> {
+    pub const AMOUNT: u32 = AMOUNT;
+
     pub(crate) fn new() -> Self {
         Self { dummy: PhantomData }
     }

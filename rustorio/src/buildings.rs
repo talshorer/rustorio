@@ -33,9 +33,9 @@ pub struct Assembler<R: AssemblerRecipe> {
 }
 
 /// Input [`Bundle`] required to build an assembler.
-type AssemblerIronInput = Bundle<{ ResourceType::Iron }, 15>;
+pub type AssemblerIronInput = Bundle<{ ResourceType::Iron }, 15>;
 /// Input [`Bundle`] required to build an assembler.
-type AssemblerCopperInput = Bundle<{ ResourceType::Copper }, 10>;
+pub type AssemblerCopperInput = Bundle<{ ResourceType::Copper }, 10>;
 
 impl<R: AssemblerRecipe> Assembler<R> {
     /// Builds an assembler. Costs 15 iron and 10 copper.
@@ -248,7 +248,7 @@ pub struct Furnace<R: FurnaceRecipe> {
 }
 
 /// Input [`Bundle`] required to build a furnace.
-type FurnaceIronInput = Bundle<{ ResourceType::Iron }, 10>;
+pub type FurnaceIronInput = Bundle<{ ResourceType::Iron }, 10>;
 
 impl<R: FurnaceRecipe> Furnace<R> {
     /// Builds a furnace. Costs 10 iron.
