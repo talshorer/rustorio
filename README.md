@@ -10,6 +10,31 @@
 The first game written _and played_ entirely in Rust's type system. Not just do you play by
 writing Rust code, the rules of the game are enforced by the Rust compiler! If
 you can write the program so it compiles and doesn't panic, you win!
+
+A while ago I realized that with Rust's affine types and ownership, it was possible to simulate resource scarcity. Combined with the richness of the type system, I wondered if it was possible to create a game with the rules enforced entirely by the Rust compiler. Well, it looks like it is. 
+
+The actual mechanics are heavily inspired by Factorio and similar games, but you play by filling out a function, and if it compiles and doesn't panic, you've won! As an example, in the tutorial level, you start with [10 iron](https://docs.rs/rustorio/latest/rustorio/gamemodes/struct.TutorialStartingResources.html)
+
+```rust
+fn user_main(mut tick: Tick, starting_resources: StartingResources) -> (Tick, Bundle<Copper, 1>) {
+    let StartingResources { iron } = starting_resources;
+```
+
+You can use this to create a [`Furnace`](https://docs.rs/rustorio/latest/rustorio/buildings/struct.Furnace.html) to turn copper ore (which you get by using [`mine_copper`](https://docs.rs/rustorio/latest/rustorio/fn.mine_copper.html)) into copper.
+
+```rust
+    let mut furnace = Furnace::build(&tick, IronSmelting, iron);
+
+    let copper_ore = rustorio::mine_copper::<8>(&mut tick);
+
+    furnace.add_input(&tick, copper_ore);
+    tick.advance_until(|tick| furnace.cur_output(tick) > 0, 100);
+
+```
+
+Because none of these types implement `Copy` or `Clone` and because they all have hidden fields, the only way (I hope) to create them is through the use of other resources, or in the case of ore, [time](https://docs.rs/rustorio/latest/rustorio/struct.Tick.html).
+
+The game is pretty simple and easy right now, but I have many ideas for future features. I really enjoy figuring our how to wrangle the Rust language into doing what I want in this way, and I really hope some of you enjoy this kind of this as well. Please do give it a try and tell me what you think!
 ## How to play
 1. Install [Rust](https://www.rust-lang.org/tools/install). Specifically it's
    important to have the entire rustup toolchain and cargo, all of which you get
