@@ -1,5 +1,5 @@
 use rustorio::{
-    Research, Tick,
+    Technology, Tick,
     buildings::{Assembler, Furnace},
     gamemodes::Standard,
     recipes::{CopperSmelting, IronSmelting, RedScienceRecipe},
@@ -17,7 +17,10 @@ pub fn main() {
 fn user_main(mut tick: Tick, starting_resources: StartingResources) -> (Tick, rustorio::Bundle<Point, 10>) {
     tick.log(false);
 
-    let StartingResources { iron, points_research } = starting_resources;
+    let StartingResources {
+        iron,
+        points_technology,
+    } = starting_resources;
 
     let mut furnace = Furnace::build(&tick, IronSmelting, iron);
 
@@ -56,7 +59,7 @@ fn user_main(mut tick: Tick, starting_resources: StartingResources) -> (Tick, ru
     tick.advance_until(|tick| assembler.cur_output(tick) >= 5, 100);
     let red_science = assembler.take_output_bundle(&tick).unwrap();
 
-    let points_recipe = points_research.research(red_science);
+    let points_recipe = points_technology.research(red_science);
     println!("Points researched!");
 
     println!("Iron left: {}", iron.amount());

@@ -41,7 +41,8 @@ pub fn play<G: GameMode>(main: fn(Tick, G::StartingResources) -> (Tick, G::Victo
 pub trait Sealed {}
 
 /// These are the items that a player should have direct access to.
-/// Should be glob reexported at the top level of mods like so
+/// Should be glob reexported at the top level of mods.
+///
 /// ```rust
 /// pub use rustorio_engine::mod_reexports::*;
 /// ```
@@ -49,7 +50,7 @@ pub mod mod_reexports {
     pub use crate::{
         gamemodes::GameMode,
         play,
-        research::Research,
+        research::Technology,
         resources::{Bundle, InsufficientResourceError, Resource},
         tick::Tick,
     };

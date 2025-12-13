@@ -42,7 +42,7 @@ impl AssemblerRecipe for RedScienceRecipe {
 
 /// The recipe you need to win! An [`Assembler`](crate::buildings::Assembler) recipe that creates points. Converts 4 iron and 4 copper into 1 point resource. Takes 20 ticks.
 ///
-/// You can unlock this recipe by researching [`PointsResearch`](crate::research::PointsResearch).
+/// You can unlock this recipe by researching [`PointsTechnology`](crate::research::PointsTechnology).
 #[derive(Debug, Clone, Copy)]
 #[non_exhaustive]
 pub struct PointRecipe;

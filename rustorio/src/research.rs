@@ -1,18 +1,21 @@
-//! Researches are technologies that can be unlocked by consuming science packs.
-//! They usually unlock new recipes or further researches.
+//! Technologies can be unlocked by consuming science packs.
+//! They usually unlock new recipes or further technologies.
 //!
-//! This module defines the researches available in Rustorio.
+//! For example, if you want to produce points using the `PointRecipe` recipe,
+//! you must first unlock it by researching the `PointsTechnology` technology.
+//!
+//! This module defines the technologies available in Rustorio.
 
-use rustorio_engine::research::{RedScience, Research};
+use rustorio_engine::research::{RedScience, Technology};
 
 use crate::{Bundle, recipes::PointRecipe};
 
-/// Research that unlocks the ability to produce points.
+/// Technology that unlocks the ability to produce points.
 #[non_exhaustive]
-pub struct PointsResearch;
-impl rustorio_engine::Sealed for PointsResearch {}
+pub struct PointsTechnology;
+impl rustorio_engine::Sealed for PointsTechnology {}
 
-impl Research for PointsResearch {
+impl Technology for PointsTechnology {
     const RED_SCIENCE_COST: u32 = 5;
     type Unlocks = PointRecipe;
 

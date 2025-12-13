@@ -10,7 +10,7 @@ use rustorio_engine::{
 use crate::{
     Bundle,
     guide::Guide,
-    research::PointsResearch,
+    research::PointsTechnology,
     resources::{Copper, Iron, Point},
 };
 
@@ -44,13 +44,13 @@ pub struct StandardStartingResources {
     /// Initial iron bundle.
     pub iron: Bundle<Iron, 10>,
     /// The tech you must research to start creating the game winning points.
-    pub points_research: PointsResearch,
+    pub points_technology: PointsTechnology,
 }
 impl StartingResources for StandardStartingResources {
     fn init() -> Self {
         Self {
             iron: bundle(),
-            points_research: PointsResearch,
+            points_technology: PointsTechnology,
         }
     }
 }
