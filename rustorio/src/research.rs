@@ -1,9 +1,11 @@
-use rustorio_engine::{
-    research::{RedScience, Research},
-    resources::Bundle,
-};
+//! Researches are technologies that can be unlocked by consuming science packs.
+//! They usually unlock new recipes or further researches.
+//!
+//! This module defines the researches available in Rustorio.
 
-use crate::recipes::PointRecipe;
+use rustorio_engine::research::{RedScience, Research};
+
+use crate::{Bundle, recipes::PointRecipe};
 
 /// Research that unlocks the ability to produce points.
 #[non_exhaustive]

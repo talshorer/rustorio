@@ -3,7 +3,7 @@
 
 use std::fmt::Debug;
 
-use rustorio_engine::{Sealed, research::RedScience, resources::ResourceType};
+use rustorio_engine::{ResourceType, Sealed, research::RedScience};
 
 use crate::resources::{Copper, CopperOre, Iron, IronOre, Point};
 

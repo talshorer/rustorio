@@ -1,3 +1,9 @@
+//! Resources are the fundamental units of value in Rustorio.
+//! Resources are held in either [`Resource`](crate::Resource) or [`Bundle`](crate::Bundle) objects.
+//! [`Bundle`](crate::Bundle) objects are used to hold a fixed amount of a resource, while [`Resource`](crate::Resource) objects can hold any amount.
+//!
+//! This module defines the core resources used in Rustorio.
+
 use rustorio_engine::resource_type;
 
 resource_type!(

@@ -9,12 +9,10 @@
 
 use std::marker::PhantomData;
 
-use rustorio_engine::{
-    resources::{Bundle, InsufficientResourceError, Resource, bundle, resource},
-    tick::Tick,
-};
+use rustorio_engine::{bundle, resource};
 
 use crate::{
+    Bundle, InsufficientResourceError, Resource, Tick,
     recipes::{AssemblerRecipe, FurnaceRecipe},
     resources::{Copper, Iron},
 };

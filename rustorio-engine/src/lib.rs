@@ -1,5 +1,6 @@
 #![feature(generic_const_exprs)]
 #![allow(incomplete_features)] // silence the “still incomplete” lint
+#![warn(missing_docs)]
 //! The core engine for Rustorio.
 //! Only relevant if you are writing a mod for Rustorio.
 //! To play the game, depend on the `rustorio` crate instead.
@@ -8,11 +9,12 @@
 
 pub mod gamemodes;
 pub mod research;
-pub mod resources;
-pub mod tick;
+mod resources;
+mod tick;
 
 use std::sync::Once;
 
+pub use crate::resources::{ResourceType, bundle, resource};
 use crate::{
     gamemodes::{GameMode, StartingResources},
     tick::Tick,
@@ -34,8 +36,15 @@ pub fn play<G: GameMode>(main: fn(Tick, G::StartingResources) -> (Tick, G::Victo
     std::process::exit(0);
 }
 
+/// A trait to prevent players from implementing certain traits.
+/// Should not be reexported in mods.
 pub trait Sealed {}
 
+/// These are the items that a player should have direct access to.
+/// Should be glob reexported at the top level of mods like so
+/// ```rust
+/// pub use rustorio_engine::mod_reexports::*;
+/// ```
 pub mod mod_reexports {
     pub use crate::{
         gamemodes::GameMode,

@@ -1,3 +1,8 @@
+//! Researches are technologies that can be unlocked by consuming science packs.
+//! They usually unlock new recipes or further researches.
+//!
+//! This module defines the the science pack resources and the `Research` trait.
+
 use crate::{Sealed, resource_type, resources::Bundle};
 
 resource_type!(

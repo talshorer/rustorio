@@ -1,6 +1,8 @@
+//! A guide that provides hints to the player during the tutorial.
+
 use std::process;
 
-use rustorio_engine::resources::ResourceType;
+use rustorio_engine::ResourceType;
 
 use crate::{
     Bundle, Resource, Tick,
@@ -77,6 +79,7 @@ where
 pub struct Guide;
 
 impl Guide {
+    /// Provides a hint about the specified topic and exits the program.
     #[allow(unused_variables)]
     #[allow(private_bounds)]
     pub fn hint<T: GuideTopic>(&self, topic: T) -> ! {

@@ -1,9 +1,14 @@
+//! A game mode defines the starting resources and victory conditions for a game.
+//!
+//! This module defines the available game modes.
+
 use rustorio_engine::{
+    bundle,
     gamemodes::{GameMode, StartingResources},
-    resources::{Bundle, bundle},
 };
 
 use crate::{
+    Bundle,
     guide::Guide,
     research::PointsResearch,
     resources::{Copper, Iron, Point},
@@ -11,7 +16,9 @@ use crate::{
 
 /// Starting resources for the tutorial game mode.
 pub struct TutorialStartingResources {
+    /// Initial iron bundle.
     pub iron: Bundle<Iron, 10>,
+    /// The in-game guide that provides hints to the player.
     pub guide: Guide,
 }
 
@@ -34,7 +41,9 @@ impl GameMode for Tutorial {
 
 /// Starting resources for the standard game mode. Includes 10 iron and the ability to research points.
 pub struct StandardStartingResources {
+    /// Initial iron bundle.
     pub iron: Bundle<Iron, 10>,
+    /// The tech you must research to start creating the game winning points.
     pub points_research: PointsResearch,
 }
 impl StartingResources for StandardStartingResources {

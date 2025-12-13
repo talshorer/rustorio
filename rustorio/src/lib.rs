@@ -1,3 +1,4 @@
+#![warn(missing_docs)]
 //! The base mod for Rustorio.
 //! Contains all the main content of the game.
 //! Your saves should depend on this crate.
@@ -11,8 +12,8 @@ pub mod recipes;
 pub mod research;
 pub mod resources;
 
+use rustorio_engine::bundle;
 pub use rustorio_engine::mod_reexports::*;
-use rustorio_engine::resources::bundle;
 
 use crate::resources::{CopperOre, IronOre};
 
