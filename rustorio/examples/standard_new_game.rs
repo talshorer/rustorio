@@ -1,8 +1,9 @@
 #![forbid(unsafe_code)]
 
 use rustorio::{
-    self, Bundle, ResourceType, Tick,
+    self, Bundle, Tick,
     gamemodes::{self},
+    resources::Point,
 };
 
 type GameMode = gamemodes::Standard;
@@ -13,7 +14,7 @@ fn main() {
     rustorio::play::<GameMode>(user_main);
 }
 
-fn user_main(mut tick: Tick, starting_resources: StartingResources) -> (Tick, Bundle<{ ResourceType::Point }, 10>) {
+fn user_main(mut tick: Tick, starting_resources: StartingResources) -> (Tick, Bundle<Point, 10>) {
     let StartingResources { iron, points_research } = starting_resources;
 
     todo!("Return the `tick` and the victory resources to win the game!")

@@ -1,6 +1,6 @@
-use crate::{Bundle, ResourceType, recipes::PointRecipe, sealed::Sealed};
+use crate::{Bundle, recipes::PointRecipe, resources::RedScience, sealed::Sealed};
 
-type RedScienceBundle<const AMOUNT: u32> = Bundle<{ ResourceType::RedScience }, AMOUNT>;
+type RedScienceBundle<const AMOUNT: u32> = Bundle<RedScience, AMOUNT>;
 
 /// A research can be carried out by calling the `research` method with the required science packs.
 /// This will consume the science packs and the research itself, and return whatever the research unlocks, mostly recipes and other researches.

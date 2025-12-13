@@ -2,51 +2,110 @@
 //! [`Bundle`](Bundle) objects are used to hold a fixed amount of a resource, while [`Resource`](Resource) objects can hold any amount.
 
 use std::{
-    fmt::Display,
-    marker::{ConstParamTy, PhantomData},
+    fmt::{Debug, Display},
+    marker::PhantomData,
     ops::{Add, AddAssign},
 };
 
-use crate::InsufficientResourceError;
+use crate::sealed::Sealed;
 
-/// The different types of resources in the game.
-/// Used as a const generic parameter for both [`Resource`](Resource) and [`Bundle`](Bundle).
-#[derive(ConstParamTy, Debug, Clone, Copy, PartialEq, Eq)]
-pub enum ResourceType {
+pub trait ResourceType: Sealed + Debug {
+    const NAME: &'static str;
+}
+
+macro_rules! resource_type {
+
+    ($(#[$outer:meta])*
+    $name:ident) => {
+        $(#[$outer])*
+        #[derive(Debug)]
+        pub struct $name;
+        impl Sealed for $name {}
+        impl ResourceType for $name {
+            const NAME: &'static str = stringify!($name);
+        }
+    };
+}
+
+resource_type!(
     /// Used to win the game in some game modes.
-    Point,
+    Point);
+
+resource_type!(
     /// Raw iron ore mined from the ground.
     /// Can be smelted into iron ingots using a [`Furnace`](crate::buildings::Furnace).
-    IronOre,
+    IronOre);
+
+resource_type!(
     /// Refined iron ingots produced by smelting iron ore.
     /// Used in various recipes and to build structures.
-    Iron,
+    Iron);
+
+resource_type!(
     /// Raw copper ore mined from the ground.
     /// Can be smelted into copper ingots using a [`Furnace`](crate::buildings::Furnace).
-    CopperOre,
+    CopperOre);
+
+resource_type!(
     /// Refined copper ingots produced by smelting copper ore.
     /// Used in various recipes and to build structures.
-    Copper,
+    Copper);
+
+resource_type!(
     /// Red science packs used for research.
-    RedScience,
+    RedScience);
+
+#[derive(Debug, Clone)]
+pub struct InsufficientResourceError<Resource: ResourceType> {
+    pub requested_amount: u32,
+    pub available_amount: u32,
+    phantom: PhantomData<Resource>,
+}
+
+impl<Resource: ResourceType> InsufficientResourceError<Resource> {
+    pub fn new(requested_amount: u32, available_amount: u32) -> Self {
+        Self {
+            requested_amount,
+            available_amount,
+            phantom: PhantomData,
+        }
+    }
+}
+
+impl<Resource: ResourceType> Display for InsufficientResourceError<Resource> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "Insufficient {:?}: requested {}, but only {} available",
+            Resource::NAME,
+            self.requested_amount,
+            self.available_amount
+        )
+    }
 }
 
 /// Holds an arbitrary amount of a resource.
 /// A [`Resource`](Resource) object can be split into smaller parts, combined or [`Bundle`](Bundle)s can be extracted from them.
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord)]
-pub struct Resource<const RESOURCE_TYPE: ResourceType> {
+pub struct Resource<Content: ResourceType> {
     pub(crate) amount: u32,
+    phantom: PhantomData<Content>,
 }
 
-impl<const RESOURCE_TYPE: ResourceType> Resource<RESOURCE_TYPE> {
+impl<Content: ResourceType> Resource<Content> {
     /// Creates a new empty [`Resource`](Resource).
     pub fn empty() -> Self {
-        Self { amount: 0 }
+        Self {
+            amount: 0,
+            phantom: PhantomData,
+        }
     }
 
-    /// The type of resource contained in this [`Resource`](Resource).
-    pub fn resource_type(&self) -> ResourceType {
-        RESOURCE_TYPE
+    pub(crate) fn new(amount: u32) -> Self {
+        Self {
+            amount,
+            phantom: PhantomData,
+        }
     }
 
     /// The current amount of the resource contained in this [`Resource`](Resource).
@@ -58,7 +117,7 @@ impl<const RESOURCE_TYPE: ResourceType> Resource<RESOURCE_TYPE> {
     /// If there are insufficient resources in the [`Resource`](Resource), it returns an error with the original resource.
     pub fn split(self, amount: u32) -> Result<(Self, Self), Self> {
         if let Some(remaining) = self.amount.checked_sub(amount) {
-            Ok((Resource { amount: remaining }, Resource { amount }))
+            Ok((Self::new(remaining), Self::new(amount)))
         } else {
             Err(self)
         }
@@ -66,74 +125,68 @@ impl<const RESOURCE_TYPE: ResourceType> Resource<RESOURCE_TYPE> {
 
     /// Removes a specified amount of resources from this [`Resource`](Resource) and returns them as a new [`Resource`](Resource).
     /// If there are insufficient resources in the [`Resource`](Resource), it returns `None`.
-    pub fn split_off(&mut self, amount: u32) -> Result<Self, InsufficientResourceError<RESOURCE_TYPE>> {
+    pub fn split_off(&mut self, amount: u32) -> Result<Self, InsufficientResourceError<Content>> {
         if let Some(remaining) = self.amount.checked_sub(amount) {
             self.amount = remaining;
-            Ok(Resource { amount })
+            Ok(Resource::new(amount))
         } else {
-            Err(InsufficientResourceError {
-                requested_amount: amount,
-                available_amount: self.amount,
-            })
+            Err(InsufficientResourceError::new(amount, self.amount))
         }
     }
 
     /// Consumes a [`Bundle`](Bundle) of the same resource type and adds the contained resources to this [`Resource`](Resource).
-    pub fn add_bundle<const AMOUNT: u32>(&mut self, bundle: Bundle<RESOURCE_TYPE, AMOUNT>) {
+    pub fn add_bundle<const AMOUNT: u32>(&mut self, bundle: Bundle<Content, AMOUNT>) {
         self.amount += bundle.amount();
     }
 
     /// Takes a specified amount of resources from this [`Resource`](Resource) and puts it into a [`Bundle`](Bundle).
-    pub fn bundle<const AMOUNT: u32>(&mut self) -> Result<Bundle<RESOURCE_TYPE, AMOUNT>, InsufficientResourceError<RESOURCE_TYPE>> {
+    pub fn bundle<const AMOUNT: u32>(&mut self) -> Result<Bundle<Content, AMOUNT>, InsufficientResourceError<Content>> {
         if let Some(remaining) = self.amount.checked_sub(AMOUNT) {
             self.amount = remaining;
             Ok(Bundle::new())
         } else {
-            Err(InsufficientResourceError {
-                requested_amount: AMOUNT,
-                available_amount: self.amount,
-            })
+            Err(InsufficientResourceError::new(AMOUNT, self.amount))
         }
     }
 }
 
-impl<const RESOURCE_TYPE: ResourceType> Display for Resource<RESOURCE_TYPE> {
+impl<Content: ResourceType> Display for Resource<Content> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{:?} x {}", RESOURCE_TYPE, self.amount)
+        write!(f, "{:?} x {}", Content::NAME, self.amount)
     }
 }
 
-impl<const RESOURCE_TYPE: ResourceType> PartialOrd<u32> for Resource<RESOURCE_TYPE> {
+impl<Content: ResourceType> PartialOrd<u32> for Resource<Content> {
     fn partial_cmp(&self, other: &u32) -> Option<std::cmp::Ordering> {
         Some(self.amount.cmp(other))
     }
 }
 
-impl<const RESOURCE_TYPE: ResourceType> PartialEq<u32> for Resource<RESOURCE_TYPE> {
+impl<Content: ResourceType> PartialEq<u32> for Resource<Content> {
     fn eq(&self, other: &u32) -> bool {
         self.amount == *other
     }
 }
 
-impl<const RESOURCE_TYPE: ResourceType> PartialOrd<Resource<RESOURCE_TYPE>> for u32 {
-    fn partial_cmp(&self, other: &Resource<RESOURCE_TYPE>) -> Option<std::cmp::Ordering> {
+impl<Content: ResourceType> PartialOrd<Resource<Content>> for u32 {
+    fn partial_cmp(&self, other: &Resource<Content>) -> Option<std::cmp::Ordering> {
         Some(self.cmp(&other.amount))
     }
 }
 
-impl<const RESOURCE_TYPE: ResourceType> PartialEq<Resource<RESOURCE_TYPE>> for u32 {
-    fn eq(&self, other: &Resource<RESOURCE_TYPE>) -> bool {
+impl<Content: ResourceType> PartialEq<Resource<Content>> for u32 {
+    fn eq(&self, other: &Resource<Content>) -> bool {
         *self == other.amount
     }
 }
 
-impl<const RESOURCE_TYPE: ResourceType> AddAssign for Resource<RESOURCE_TYPE> {
+impl<Content: ResourceType> AddAssign for Resource<Content> {
     fn add_assign(&mut self, rhs: Self) {
         self.amount += rhs.amount
     }
 }
 
-impl<const RESOURCE_TYPE: ResourceType> Add for Resource<RESOURCE_TYPE> {
+impl<Content: ResourceType> Add for Resource<Content> {
     type Output = Self;
 
     fn add(mut self, rhs: Self) -> Self::Output {
@@ -144,28 +197,22 @@ impl<const RESOURCE_TYPE: ResourceType> Add for Resource<RESOURCE_TYPE> {
 
 /// Contains a fixed (compile-time known) amount of a resource.
 /// A [`Bundle`](Bundle) can be used to build structures or as input for recipes.
-pub struct Bundle<const RESOURCE_TYPE: ResourceType, const AMOUNT: u32> {
-    dummy: PhantomData<ResourceType>,
+pub struct Bundle<Content: ResourceType, const AMOUNT: u32> {
+    dummy: PhantomData<Content>,
 }
 
-impl<const RESOURCE_TYPE: ResourceType, const AMOUNT: u32> Bundle<RESOURCE_TYPE, AMOUNT> {
+impl<Content: ResourceType, const AMOUNT: u32> Bundle<Content, AMOUNT> {
     pub const AMOUNT: u32 = AMOUNT;
 
     pub(crate) fn new() -> Self {
         Self { dummy: PhantomData }
     }
 
-    pub fn resource_type(&self) -> ResourceType {
-        RESOURCE_TYPE
-    }
-
     pub fn amount(&self) -> u32 {
         AMOUNT
     }
 
-    pub fn split<const AMOUNT1: u32, const AMOUNT2: u32>(
-        self,
-    ) -> (Bundle<RESOURCE_TYPE, AMOUNT1>, Bundle<RESOURCE_TYPE, AMOUNT2>)
+    pub fn split<const AMOUNT1: u32, const AMOUNT2: u32>(self) -> (Bundle<Content, AMOUNT1>, Bundle<Content, AMOUNT2>)
     where
         // Enforce that AMOUNT1 + AMOUNT2 == AMOUNT at compile time
         [(); AMOUNT as usize - (AMOUNT1 as usize + AMOUNT2 as usize)]:,
@@ -175,57 +222,49 @@ impl<const RESOURCE_TYPE: ResourceType, const AMOUNT: u32> Bundle<RESOURCE_TYPE,
     }
 
     /// Converts this [`Bundle`](Bundle) into a [`Resource`](Resource) with the same resource type and amount.
-    pub fn to_resource(self) -> Resource<RESOURCE_TYPE> {
-        Resource { amount: AMOUNT }
+    pub fn to_resource(self) -> Resource<Content> {
+        Resource::new(AMOUNT)
     }
 }
 
-impl<const RESOURCE_TYPE: ResourceType, const AMOUNT: u32> AddAssign<Bundle<RESOURCE_TYPE, AMOUNT>>
-    for Resource<RESOURCE_TYPE>
-{
-    fn add_assign(&mut self, _bundle: Bundle<RESOURCE_TYPE, AMOUNT>) {
+impl<Content: ResourceType, const AMOUNT: u32> AddAssign<Bundle<Content, AMOUNT>> for Resource<Content> {
+    fn add_assign(&mut self, _bundle: Bundle<Content, AMOUNT>) {
         self.amount += AMOUNT;
     }
 }
 
-impl<const RESOURCE_TYPE: ResourceType, const AMOUNT: u32> Add<Bundle<RESOURCE_TYPE, AMOUNT>>
-    for Resource<RESOURCE_TYPE>
-{
+impl<Content: ResourceType, const AMOUNT: u32> Add<Bundle<Content, AMOUNT>> for Resource<Content> {
     type Output = Self;
 
-    fn add(mut self, rhs: Bundle<RESOURCE_TYPE, AMOUNT>) -> Self::Output {
+    fn add(mut self, rhs: Bundle<Content, AMOUNT>) -> Self::Output {
         self += rhs;
         self
     }
 }
 
-impl<const RESOURCE_TYPE: ResourceType, const AMOUNT: u32> Add<Resource<RESOURCE_TYPE>>
-    for Bundle<RESOURCE_TYPE, AMOUNT>
-{
-    type Output = Resource<RESOURCE_TYPE>;
+impl<Content: ResourceType, const AMOUNT: u32> Add<Resource<Content>> for Bundle<Content, AMOUNT> {
+    type Output = Resource<Content>;
 
-    fn add(self, mut rhs: Resource<RESOURCE_TYPE>) -> Self::Output {
+    fn add(self, mut rhs: Resource<Content>) -> Self::Output {
         rhs += self;
         rhs
     }
 }
 
-impl<const RESOURCE_TYPE: ResourceType, const AMOUNT_LHS: u32, const AMOUNT_RHS: u32>
-    Add<Bundle<RESOURCE_TYPE, AMOUNT_RHS>> for Bundle<RESOURCE_TYPE, AMOUNT_LHS>
+impl<Content: ResourceType, const AMOUNT_LHS: u32, const AMOUNT_RHS: u32> Add<Bundle<Content, AMOUNT_RHS>>
+    for Bundle<Content, AMOUNT_LHS>
 where
     [(); { AMOUNT_LHS + AMOUNT_RHS } as usize]:,
 {
-    type Output = Bundle<RESOURCE_TYPE, { AMOUNT_LHS + AMOUNT_RHS }>;
+    type Output = Bundle<Content, { AMOUNT_LHS + AMOUNT_RHS }>;
 
-    fn add(self, _rhs: Bundle<RESOURCE_TYPE, AMOUNT_RHS>) -> Self::Output {
+    fn add(self, _rhs: Bundle<Content, AMOUNT_RHS>) -> Self::Output {
         Bundle::new()
     }
 }
 
-impl<const RESOURCE_TYPE: ResourceType, const AMOUNT: u32> From<Bundle<RESOURCE_TYPE, AMOUNT>>
-    for Resource<RESOURCE_TYPE>
-{
-    fn from(_bundle: Bundle<RESOURCE_TYPE, AMOUNT>) -> Self {
-        Resource { amount: AMOUNT }
+impl<Content: ResourceType, const AMOUNT: u32> From<Bundle<Content, AMOUNT>> for Resource<Content> {
+    fn from(_bundle: Bundle<Content, AMOUNT>) -> Self {
+        Resource::new(AMOUNT)
     }
 }

@@ -3,20 +3,24 @@
 
 use std::fmt::Debug;
 
-use crate::{ResourceType, sealed::Sealed};
+use crate::{
+    ResourceType,
+    resources::{Copper, CopperOre, Iron, IronOre, Point, RedScience},
+    sealed::Sealed,
+};
 
 /// Any recipe that implements this trait can be used in an [`Assembler`](crate::buildings::Assembler).
 pub trait AssemblerRecipe: Debug + Sealed {
     /// The first of the two types of resources consumed by this recipe.
-    const INPUT1: ResourceType;
+    type Input1: ResourceType;
     /// The amount of the first input resource consumed by this recipe.
     const INPUT1_AMOUNT: u32;
     /// The second of the two types of resources consumed by this recipe.
-    const INPUT2: ResourceType;
+    type Input2: ResourceType;
     /// The amount of the second input resource consumed by this recipe.
     const INPUT2_AMOUNT: u32;
     /// The type of resource produced by this recipe.
-    const OUTPUT: ResourceType;
+    type Output: ResourceType;
     /// The amount of the output resource produced by this recipe.
     const OUTPUT_AMOUNT: u32;
     /// The time (in ticks) it takes to complete this recipe.
@@ -29,11 +33,11 @@ pub trait AssemblerRecipe: Debug + Sealed {
 pub struct RedScienceRecipe;
 impl Sealed for RedScienceRecipe {}
 impl AssemblerRecipe for RedScienceRecipe {
-    const INPUT1: ResourceType = ResourceType::Iron;
+    type Input1 = Iron;
     const INPUT1_AMOUNT: u32 = 1;
-    const INPUT2: ResourceType = ResourceType::Copper;
+    type Input2 = Copper;
     const INPUT2_AMOUNT: u32 = 1;
-    const OUTPUT: ResourceType = ResourceType::RedScience;
+    type Output = RedScience;
     const OUTPUT_AMOUNT: u32 = 1;
     const TIME: u64 = 5;
 }
@@ -48,11 +52,11 @@ pub struct PointRecipe;
 impl Sealed for PointRecipe {}
 
 impl AssemblerRecipe for PointRecipe {
-    const INPUT1: ResourceType = ResourceType::Iron;
+    type Input1 = Iron;
     const INPUT1_AMOUNT: u32 = 4;
-    const INPUT2: ResourceType = ResourceType::Copper;
+    type Input2 = Copper;
     const INPUT2_AMOUNT: u32 = 4;
-    const OUTPUT: ResourceType = ResourceType::Point;
+    type Output = Point;
     const OUTPUT_AMOUNT: u32 = 1;
     const TIME: u64 = 20;
 }
@@ -60,11 +64,11 @@ impl AssemblerRecipe for PointRecipe {
 /// Any recipe that implements this trait can be used in a [`Furnace`](crate::buildings::Furnace).
 pub trait FurnaceRecipe: Debug + Sealed {
     /// The type of resource consumed by this recipe.
-    const INPUT: ResourceType;
+    type Input: ResourceType;
     /// The amount of the input resource consumed by this recipe.
     const INPUT_AMOUNT: u32;
     /// The type of resource produced by this recipe.
-    const OUTPUT: ResourceType;
+    type Output: ResourceType;
     /// The amount of the output resource produced by this recipe.
     const OUTPUT_AMOUNT: u32;
     /// The time (in ticks) it takes to complete this recipe.
@@ -79,9 +83,9 @@ pub struct IronSmelting;
 impl Sealed for IronSmelting {}
 
 impl FurnaceRecipe for IronSmelting {
-    const INPUT: ResourceType = ResourceType::IronOre;
+    type Input = IronOre;
     const INPUT_AMOUNT: u32 = 2;
-    const OUTPUT: ResourceType = ResourceType::Iron;
+    type Output = Iron;
     const OUTPUT_AMOUNT: u32 = 1;
     const TIME: u64 = 10;
 }
@@ -93,9 +97,9 @@ pub struct CopperSmelting;
 impl Sealed for CopperSmelting {}
 
 impl FurnaceRecipe for CopperSmelting {
-    const INPUT: ResourceType = ResourceType::CopperOre;
+    type Input = CopperOre;
     const INPUT_AMOUNT: u32 = 2;
-    const OUTPUT: ResourceType = ResourceType::Copper;
+    type Output = Copper;
     const OUTPUT_AMOUNT: u32 = 1;
     const TIME: u64 = 10;
 }

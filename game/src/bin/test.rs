@@ -3,6 +3,7 @@ use rustorio::{
     gamemodes,
     recipes::{CopperSmelting, IronSmelting, RedScienceRecipe},
     research::Research,
+    resources::Point,
 };
 
 type GameMode = gamemodes::Standard;
@@ -16,7 +17,7 @@ pub fn main() {
 fn user_main(
     mut tick: rustorio::Tick,
     starting_resources: StartingResources,
-) -> (rustorio::Tick, rustorio::Bundle<{ rustorio::ResourceType::Point }, 10>) {
+) -> (rustorio::Tick, rustorio::Bundle<Point, 10>) {
     tick.log(false);
 
     let StartingResources { iron, points_research } = starting_resources;

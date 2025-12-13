@@ -1,6 +1,11 @@
 use std::process;
 
-use crate::{Bundle, Resource, ResourceType, Tick, buildings::Furnace, recipes::FurnaceRecipe};
+use crate::{
+    Bundle, Resource, ResourceType, Tick,
+    buildings::Furnace,
+    recipes::FurnaceRecipe,
+    resources::{Copper, CopperOre, Iron, IronOre},
+};
 
 /// A topic that the guide can provide hints about.
 trait GuideTopic {
@@ -14,7 +19,7 @@ For more information, see https://docs.rs/rustorio/latest/rustorio/struct.Tick.h
     }
 }
 
-impl GuideTopic for Resource<{ ResourceType::Iron }> {
+impl GuideTopic for Resource<Iron> {
     fn hint() -> &'static str {
         "In this tutorial you start with 10 iron. You can use iron to build buildings like Furnaces and Assemblers.
 Try building a Furnace using `Furnace::build`. If you're in doubt about what recipe to pick, try `CopperSmelting` to smelt copper ore into copper ingots."
@@ -27,7 +32,7 @@ impl<R: FurnaceRecipe> GuideTopic for Furnace<R> {
     }
 }
 
-impl GuideTopic for Resource<{ ResourceType::CopperOre }> {
+impl GuideTopic for Resource<CopperOre> {
     fn hint() -> &'static str {
         "Great job on mining some copper ore! Add the ore to a Furnace using `Furnace::add_input`, then advance time using `Tick::advance` to smelt the ore into copper ingots. Finally, extract the ingots using `Furnace::take_output`.
 
@@ -35,13 +40,13 @@ If you don't have a Furnace yet, build one using `Furnace::build`, and use the `
     }
 }
 
-impl GuideTopic for Resource<{ ResourceType::IronOre }> {
+impl GuideTopic for Resource<IronOre> {
     fn hint() -> &'static str {
         "Good job on figuring out how to mine iron ore! You can smelt the iron ore into iron ingots using a Furnace, but you won't need to for this tutorial, instead try mining some copper ore using `mine_copper`."
     }
 }
 
-impl GuideTopic for Resource<{ ResourceType::Copper }> {
+impl GuideTopic for Resource<Copper> {
     fn hint() -> &'static str {
         "Awesome! You've made some copper ingots. To win the tutorial, you need to make 1 copper ingot. If you don't have one yet, try mining some copper ore using `mine_copper`, then smelt it into copper ingots using a Furnace."
     }
@@ -56,12 +61,12 @@ where
     }
 }
 
-impl<const RESOURCE_TYPE: ResourceType, const AMOUNT: u32> GuideTopic for Bundle<{ RESOURCE_TYPE }, AMOUNT>
+impl<Content: ResourceType, const AMOUNT: u32> GuideTopic for Bundle<Content, AMOUNT>
 where
-    Resource<{ RESOURCE_TYPE }>: GuideTopic,
+    Resource<Content>: GuideTopic,
 {
     fn hint() -> &'static str {
-        <Resource<{ RESOURCE_TYPE }> as GuideTopic>::hint()
+        <Resource<Content> as GuideTopic>::hint()
     }
 }
 

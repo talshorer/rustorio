@@ -1,8 +1,9 @@
 #![forbid(unsafe_code)]
 
 use rustorio::{
-    self, Bundle, ResourceType, Tick,
+    self, Bundle, Tick,
     gamemodes::{self},
+    resources::Copper,
 };
 
 type GameMode = gamemodes::Tutorial;
@@ -13,7 +14,7 @@ fn main() {
     rustorio::play::<GameMode>(user_main);
 }
 
-fn user_main(mut tick: Tick, starting_resources: StartingResources) -> (Tick, Bundle<{ ResourceType::Copper }, 4>) {
+fn user_main(mut tick: Tick, starting_resources: StartingResources) -> (Tick, Bundle<Copper, 4>) {
     let StartingResources { iron, guide } = starting_resources;
 
     // To start, run the game using `rustorio play tutorial` (or whatever this save is called), and follow the hint.

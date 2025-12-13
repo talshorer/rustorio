@@ -10,8 +10,9 @@
 use std::marker::PhantomData;
 
 use crate::{
-    Bundle, Resource, ResourceType,
+    Bundle, Resource,
     recipes::{AssemblerRecipe, FurnaceRecipe},
+    resources::{Copper, InsufficientResourceError, Iron},
     tick::Tick,
 };
 
@@ -33,9 +34,9 @@ pub struct Assembler<R: AssemblerRecipe> {
 }
 
 /// Input [`Bundle`] required to build an assembler.
-pub type AssemblerIronInput = Bundle<{ ResourceType::Iron }, 15>;
+pub type AssemblerIronInput = Bundle<Iron, 15>;
 /// Input [`Bundle`] required to build an assembler.
-pub type AssemblerCopperInput = Bundle<{ ResourceType::Copper }, 10>;
+pub type AssemblerCopperInput = Bundle<Copper, 10>;
 
 impl<R: AssemblerRecipe> Assembler<R> {
     /// Builds an assembler. Costs 15 iron and 10 copper.
@@ -111,123 +112,126 @@ impl<R: AssemblerRecipe> Assembler<R> {
     }
 
     /// Consumes a [`Resource`] and puts the contained resources into the assembler as input resource 1.
-    pub fn add_input1(&mut self, tick: &Tick, ore: impl Into<Resource<{ R::INPUT1 }>>) {
+    pub fn add_input1(&mut self, tick: &Tick, ore: impl Into<Resource<R::Input1>>) {
         self.tick(tick);
         self.input1_amount += ore.into().amount();
     }
 
     /// Consumes a [`Resource`] and puts the contained resources into the assembler as input resource 2.
-    pub fn add_input2(&mut self, tick: &Tick, ore: impl Into<Resource<{ R::INPUT2 }>>) {
+    pub fn add_input2(&mut self, tick: &Tick, ore: impl Into<Resource<R::Input2>>) {
         self.tick(tick);
         self.input2_amount += ore.into().amount();
     }
 
     /// Takes a specified amount of input resource 1 from the assembler and puts it into a [`Resource`].
-    pub fn take_input1(&mut self, tick: &Tick, amount: u32) -> Result<Resource<{ R::INPUT1 }>, crate::InsufficientResourceError<{ R::INPUT1 }>> {
+    pub fn take_input1(
+        &mut self,
+        tick: &Tick,
+        amount: u32,
+    ) -> Result<Resource<R::Input1>, InsufficientResourceError<R::Input1>> {
         self.tick(tick);
         if self.input1_amount >= amount {
             self.input1_amount -= amount;
-            Ok(Resource { amount })
+            Ok(Resource::new(amount))
         } else {
-            Err(crate::InsufficientResourceError {
-                requested_amount: amount,
-                available_amount: self.input1_amount,
-            })
+            Err(InsufficientResourceError::new(amount, self.input1_amount))
         }
     }
 
     /// Takes a specified amount of input resource 1 from the assembler and puts it into a [`Bundle`].
-    pub fn take_input1_bundle<const AMOUNT: u32>(&mut self, tick: &Tick) -> Result<Bundle<{ R::INPUT1 }, AMOUNT>, crate::InsufficientResourceError<{ R::INPUT1 }>> {
+    pub fn take_input1_bundle<const AMOUNT: u32>(
+        &mut self,
+        tick: &Tick,
+    ) -> Result<Bundle<R::Input1, AMOUNT>, InsufficientResourceError<R::Input1>> {
         self.tick(tick);
         if self.input1_amount >= AMOUNT {
             self.input1_amount -= AMOUNT;
             Ok(Bundle::new())
         } else {
-            Err(crate::InsufficientResourceError {
-                requested_amount: AMOUNT,
-                available_amount: self.input1_amount,
-            })
+            Err(InsufficientResourceError::new(AMOUNT, self.input1_amount))
         }
     }
 
     /// Takes all input resource 1 currently in the assembler and puts it into a [`Resource`].
-    pub fn empty_input1(&mut self, tick: &Tick) -> Resource<{ R::INPUT1 }> {
+    pub fn empty_input1(&mut self, tick: &Tick) -> Resource<R::Input1> {
         self.tick(tick);
         let amount = self.input1_amount;
         self.input1_amount = 0;
-        Resource { amount }
+        Resource::new(amount)
     }
 
     /// Takes a specified amount of input resource 2 from the assembler and puts it into a [`Resource`].
-    pub fn take_input2(&mut self, tick: &Tick, amount: u32) -> Result<Resource<{ R::INPUT2 }>, crate::InsufficientResourceError<{ R::INPUT2 }>> {
+    pub fn take_input2(
+        &mut self,
+        tick: &Tick,
+        amount: u32,
+    ) -> Result<Resource<R::Input2>, InsufficientResourceError<R::Input2>> {
         self.tick(tick);
         if self.input2_amount >= amount {
             self.input2_amount -= amount;
-            Ok(Resource { amount })
+            Ok(Resource::new(amount))
         } else {
-            Err(crate::InsufficientResourceError {
-                requested_amount: amount,
-                available_amount: self.input2_amount,
-            })
+            Err(InsufficientResourceError::new(amount, self.input2_amount))
         }
     }
 
     /// Takes a specified amount of input resource 2 from the assembler and puts it into a [`Bundle`].
-    pub fn take_input2_bundle<const AMOUNT: u32>(&mut self, tick: &Tick) -> Result<Bundle<{ R::INPUT2 }, AMOUNT>, crate::InsufficientResourceError<{ R::INPUT2 }>> {
+    pub fn take_input2_bundle<const AMOUNT: u32>(
+        &mut self,
+        tick: &Tick,
+    ) -> Result<Bundle<R::Input2, AMOUNT>, InsufficientResourceError<R::Input2>> {
         self.tick(tick);
         if self.input2_amount >= AMOUNT {
             self.input2_amount -= AMOUNT;
             Ok(Bundle::new())
         } else {
-            Err(crate::InsufficientResourceError {
-                requested_amount: AMOUNT,
-                available_amount: self.input2_amount,
-            })
+            Err(InsufficientResourceError::new(AMOUNT, self.input2_amount))
         }
     }
 
     /// Takes all input resource 2 currently in the assembler and puts it into a [`Resource`].
-    pub fn empty_input2(&mut self, tick: &Tick) -> Resource<{ R::INPUT2 }> {
+    pub fn empty_input2(&mut self, tick: &Tick) -> Resource<R::Input2> {
         self.tick(tick);
         let amount = self.input2_amount;
         self.input2_amount = 0;
-        Resource { amount }
+        Resource::new(amount)
     }
 
     /// Takes a specified amount of output resources from the assembler and puts it into a [`Resource`].
-    pub fn take_output(&mut self, tick: &Tick, amount: u32) -> Result<Resource<{ R::OUTPUT }>, crate::InsufficientResourceError<{ R::OUTPUT }>> {
+    pub fn take_output(
+        &mut self,
+        tick: &Tick,
+        amount: u32,
+    ) -> Result<Resource<R::Output>, InsufficientResourceError<R::Output>> {
         self.tick(tick);
         if self.output_amount >= amount {
             self.output_amount -= amount;
-            Ok(Resource { amount })
+            Ok(Resource::new(amount))
         } else {
-            Err(crate::InsufficientResourceError {
-                requested_amount: amount,
-                available_amount: self.output_amount,
-            })
+            Err(InsufficientResourceError::new(amount, self.output_amount))
         }
     }
 
     /// Takes a specified amount of output resources from the assembler and puts it into a [`Bundle`].
-    pub fn take_output_bundle<const AMOUNT: u32>(&mut self, tick: &Tick) -> Result<Bundle<{ R::OUTPUT }, AMOUNT>, crate::InsufficientResourceError<{ R::OUTPUT }>> {
+    pub fn take_output_bundle<const AMOUNT: u32>(
+        &mut self,
+        tick: &Tick,
+    ) -> Result<Bundle<R::Output, AMOUNT>, InsufficientResourceError<R::Output>> {
         self.tick(tick);
         if self.output_amount >= AMOUNT {
             self.output_amount -= AMOUNT;
             Ok(Bundle::new())
         } else {
-            Err(crate::InsufficientResourceError {
-                requested_amount: AMOUNT,
-                available_amount: self.output_amount,
-            })
+            Err(InsufficientResourceError::new(AMOUNT, self.output_amount))
         }
     }
 
     /// Takes all output resources currently in the assembler and puts it into a [`Resource`].
-    pub fn empty_output(&mut self, tick: &Tick) -> Resource<{ R::OUTPUT }> {
+    pub fn empty_output(&mut self, tick: &Tick) -> Resource<R::Output> {
         self.tick(tick);
         let amount = self.output_amount;
         self.output_amount = 0;
-        Resource { amount }
+        Resource::new(amount)
     }
 }
 
@@ -248,7 +252,7 @@ pub struct Furnace<R: FurnaceRecipe> {
 }
 
 /// Input [`Bundle`] required to build a furnace.
-pub type FurnaceIronInput = Bundle<{ ResourceType::Iron }, 10>;
+pub type FurnaceIronInput = Bundle<Iron, 10>;
 
 impl<R: FurnaceRecipe> Furnace<R> {
     /// Builds a furnace. Costs 10 iron.
@@ -310,80 +314,82 @@ impl<R: FurnaceRecipe> Furnace<R> {
     }
 
     /// Consumes a [`Resource`] and puts the contained resources into the furnace.
-    pub fn add_input(&mut self, tick: &Tick, ore: impl Into<Resource<{ R::INPUT }>>) {
+    pub fn add_input(&mut self, tick: &Tick, ore: impl Into<Resource<R::Input>>) {
         self.tick(tick);
         self.input_amount += ore.into().amount();
     }
 
     /// Takes a specified amount of input resources from the furnace and puts it into a [`Resource`].
-    pub fn take_input(&mut self, tick: &Tick, amount: u32) -> Result<Resource<{ R::INPUT }>, crate::InsufficientResourceError<{ R::INPUT }>> {
+    pub fn take_input(
+        &mut self,
+        tick: &Tick,
+        amount: u32,
+    ) -> Result<Resource<R::Input>, InsufficientResourceError<R::Input>> {
         self.tick(tick);
         if self.input_amount >= amount {
             self.input_amount -= amount;
-            Ok(Resource { amount })
+            Ok(Resource::new(amount))
         } else {
-            Err(crate::InsufficientResourceError {
-                requested_amount: amount,
-                available_amount: self.input_amount,
-            })
+            Err(InsufficientResourceError::new(amount, self.input_amount))
         }
     }
 
     /// Takes a specified amount of input resources from the furnace and puts it into a [`Bundle`].
-    pub fn take_input_bundle<const AMOUNT: u32>(&mut self, tick: &Tick) -> Result<Bundle<{ R::INPUT }, AMOUNT>, crate::InsufficientResourceError<{ R::INPUT }>> {
+    pub fn take_input_bundle<const AMOUNT: u32>(
+        &mut self,
+        tick: &Tick,
+    ) -> Result<Bundle<R::Input, AMOUNT>, InsufficientResourceError<R::Input>> {
         self.tick(tick);
         if self.input_amount >= AMOUNT {
             self.input_amount -= AMOUNT;
             Ok(Bundle::new())
         } else {
-            Err(crate::InsufficientResourceError {
-                requested_amount: AMOUNT,
-                available_amount: self.input_amount,
-            })
+            Err(InsufficientResourceError::new(AMOUNT, self.input_amount))
         }
     }
 
     /// Takes all input resources currently in the furnace and puts it into a [`Resource`].
-    pub fn empty_input(&mut self, tick: &Tick) -> Resource<{ R::INPUT }> {
+    pub fn empty_input(&mut self, tick: &Tick) -> Resource<R::Input> {
         self.tick(tick);
         let amount = self.input_amount;
         self.input_amount = 0;
-        Resource { amount }
+        Resource::new(amount)
     }
 
     /// Takes a specified amount of output resources from the furnace and puts it into a [`Resource`].
-    pub fn take_output(&mut self, tick: &Tick, amount: u32) -> Result<Resource<{ R::OUTPUT }>, crate::InsufficientResourceError<{ R::OUTPUT }>> {
+    pub fn take_output(
+        &mut self,
+        tick: &Tick,
+        amount: u32,
+    ) -> Result<Resource<R::Output>, InsufficientResourceError<R::Output>> {
         self.tick(tick);
         if self.output_amount >= amount {
             self.output_amount -= amount;
-            Ok(Resource { amount })
+            Ok(Resource::new(amount))
         } else {
-            Err(crate::InsufficientResourceError {
-                requested_amount: amount,
-                available_amount: self.output_amount,
-            })
+            Err(InsufficientResourceError::new(amount, self.output_amount))
         }
     }
 
     /// Takes a specified amount of output resources from the furnace and puts it into a [`Bundle`].
-    pub fn take_output_bundle<const AMOUNT: u32>(&mut self, tick: &Tick) -> Result<Bundle<{ R::OUTPUT }, AMOUNT>, crate::InsufficientResourceError<{ R::OUTPUT }>> {
+    pub fn take_output_bundle<const AMOUNT: u32>(
+        &mut self,
+        tick: &Tick,
+    ) -> Result<Bundle<R::Output, AMOUNT>, InsufficientResourceError<R::Output>> {
         self.tick(tick);
         if self.output_amount >= AMOUNT {
             self.output_amount -= AMOUNT;
             Ok(Bundle::new())
         } else {
-            Err(crate::InsufficientResourceError {
-                requested_amount: AMOUNT,
-                available_amount: self.output_amount,
-            })
+            Err(InsufficientResourceError::new(AMOUNT, self.output_amount))
         }
     }
 
     /// Takes all output resources currently in the furnace and puts it into a [`Resource`].
-    pub fn empty_output(&mut self, tick: &Tick) -> Resource<{ R::OUTPUT }> {
+    pub fn empty_output(&mut self, tick: &Tick) -> Resource<R::Output> {
         self.tick(tick);
         let amount = self.output_amount;
         self.output_amount = 0;
-        Resource { amount }
+        Resource::new(amount)
     }
 }

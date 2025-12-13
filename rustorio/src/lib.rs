@@ -1,5 +1,4 @@
 #![doc = include_str!("../../README.md")]
-#![feature(adt_const_params)]
 #![feature(generic_const_exprs)]
 #![allow(incomplete_features)] // silence the “still incomplete” lint
 
@@ -8,15 +7,18 @@ pub mod gamemodes;
 pub mod guide;
 pub mod recipes;
 pub mod research;
-mod resources;
+pub mod resources;
 mod tick;
 
-use std::{fmt::Display, sync::Once};
+use std::sync::Once;
 
 pub use resources::{Bundle, Resource, ResourceType};
 pub use tick::Tick;
 
-use crate::gamemodes::{GameMode, StartingResources};
+use crate::{
+    gamemodes::{GameMode, StartingResources},
+    resources::{CopperOre, IronOre},
+};
 
 static ONCE: Once = Once::new();
 
@@ -35,7 +37,7 @@ pub fn play<G: GameMode>(main: fn(Tick, G::StartingResources) -> (Tick, G::Victo
 }
 
 /// A bundle of specifically iron ore.
-pub type IronOreBundle<const AMOUNT: u32> = Bundle<{ ResourceType::IronOre }, AMOUNT>;
+pub type IronOreBundle<const AMOUNT: u32> = Bundle<IronOre, AMOUNT>;
 
 /// Mines iron ore. Takes 2 ticks to mine 1 ore.
 pub fn mine_iron<const AMOUNT: u32>(tick: &mut Tick) -> IronOreBundle<AMOUNT> {
@@ -44,28 +46,12 @@ pub fn mine_iron<const AMOUNT: u32>(tick: &mut Tick) -> IronOreBundle<AMOUNT> {
 }
 
 /// A bundle of specifically copper ore.
-pub type CopperOreBundle<const AMOUNT: u32> = Bundle<{ ResourceType::CopperOre }, AMOUNT>;
+pub type CopperOreBundle<const AMOUNT: u32> = Bundle<CopperOre, AMOUNT>;
 
 /// Mines copper ore. Takes 2 ticks to mine 1 ore.
 pub fn mine_copper<const AMOUNT: u32>(tick: &mut Tick) -> CopperOreBundle<AMOUNT> {
     tick.advance_by(2 * AMOUNT as u64);
     Bundle::new()
-}
-
-#[derive(Debug, Clone)]
-pub struct InsufficientResourceError<const RESOURCE_TYPE: ResourceType> {
-    pub requested_amount: u32,
-    pub available_amount: u32,
-}
-
-impl<const RESOURCE_TYPE: ResourceType> Display for InsufficientResourceError<RESOURCE_TYPE> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(
-            f,
-            "Insufficient {RESOURCE_TYPE:?}: requested {}, but only {} available",
-            self.requested_amount, self.available_amount
-        )
-    }
 }
 
 mod sealed {
