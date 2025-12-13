@@ -32,11 +32,11 @@ Use `rustorio new-game --help` to see all available game modes.
 The rules are mostly enforced by the compiler. The only two (current) exceptions are:
 1. Do not remove `#![forbid(unsafe_code)]` at the top of the `main.rs` file.
 2. Do not exploit unsoundness in the compiler.
-Both these would allow you to bypass the rules enforced by the compiler and make the game trivial.
-If you find other ways to bypass the rules or to do things that feel like cheating (e.g. [this issue](https://github.com/albertsgarde/rustorio/issues/1)),
-please file an issue!
-Part of my interest in this project is seeing how close we can get to rule out all possible
-cheating vectors using only the Rust compiler. So I'd love to hear about any ways to cheat.
+   Both these would allow you to bypass the rules enforced by the compiler and make the game trivial.
+   If you find other ways to bypass the rules or to do things that feel like cheating (e.g. [this issue](https://github.com/albertsgarde/rustorio/issues/1)),
+   please file an issue!
+   Part of my interest in this project is seeing how close we can get to rule out all possible
+   cheating vectors using only the Rust compiler. So I'd love to hear about any ways to cheat.
 ## Help
 Documentation for the Rustorio library can be found
 [here](https://docs.rs/rustorio/latest/rustorio/). A good place to start
