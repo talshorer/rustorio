@@ -9,11 +9,14 @@
 
 use std::marker::PhantomData;
 
-use crate::{
-    Bundle, Resource,
-    recipes::{AssemblerRecipe, FurnaceRecipe},
-    resources::{Copper, InsufficientResourceError, Iron},
+use rustorio_engine::{
+    resources::{Bundle, InsufficientResourceError, Resource, bundle, resource},
     tick::Tick,
+};
+
+use crate::{
+    recipes::{AssemblerRecipe, FurnaceRecipe},
+    resources::{Copper, Iron},
 };
 
 /// The assembler is used for recipes that require two different inputs to produce an output.
@@ -33,14 +36,10 @@ pub struct Assembler<R: AssemblerRecipe> {
     recipe: PhantomData<R>,
 }
 
-/// Input [`Bundle`] required to build an assembler.
-pub type AssemblerIronInput = Bundle<Iron, 15>;
-/// Input [`Bundle`] required to build an assembler.
-pub type AssemblerCopperInput = Bundle<Copper, 10>;
-
 impl<R: AssemblerRecipe> Assembler<R> {
     /// Builds an assembler. Costs 15 iron and 10 copper.
-    pub fn build(tick: &Tick, _recipe: R, _iron: AssemblerIronInput, _copper: AssemblerCopperInput) -> Self {
+    pub fn build(tick: &Tick, recipe: R, iron: Bundle<Iron, 15>, copper: Bundle<Copper, 10>) -> Self {
+        let _ = (recipe, iron, copper);
         Self {
             input1_amount: 0,
             input2_amount: 0,
@@ -53,7 +52,8 @@ impl<R: AssemblerRecipe> Assembler<R> {
 
     /// Changes the [`Recipe`](crate::recipes) of the assembler.
     /// Returns the original assembler if the assembler has no inputs or outputs.
-    pub fn change_recipe<R2: AssemblerRecipe>(self, _recipe: R2) -> Result<Assembler<R2>, Assembler<R>> {
+    pub fn change_recipe<R2: AssemblerRecipe>(self, recipe: R2) -> Result<Assembler<R2>, Assembler<R>> {
+        let _ = recipe;
         if self.input1_amount > 0 || self.input2_amount > 0 || self.output_amount > 0 {
             Err(self)
         } else {
@@ -132,7 +132,7 @@ impl<R: AssemblerRecipe> Assembler<R> {
         self.tick(tick);
         if self.input1_amount >= amount {
             self.input1_amount -= amount;
-            Ok(Resource::new(amount))
+            Ok(resource(amount))
         } else {
             Err(InsufficientResourceError::new(amount, self.input1_amount))
         }
@@ -146,7 +146,7 @@ impl<R: AssemblerRecipe> Assembler<R> {
         self.tick(tick);
         if self.input1_amount >= AMOUNT {
             self.input1_amount -= AMOUNT;
-            Ok(Bundle::new())
+            Ok(bundle())
         } else {
             Err(InsufficientResourceError::new(AMOUNT, self.input1_amount))
         }
@@ -157,7 +157,7 @@ impl<R: AssemblerRecipe> Assembler<R> {
         self.tick(tick);
         let amount = self.input1_amount;
         self.input1_amount = 0;
-        Resource::new(amount)
+        resource(amount)
     }
 
     /// Takes a specified amount of input resource 2 from the assembler and puts it into a [`Resource`].
@@ -169,7 +169,7 @@ impl<R: AssemblerRecipe> Assembler<R> {
         self.tick(tick);
         if self.input2_amount >= amount {
             self.input2_amount -= amount;
-            Ok(Resource::new(amount))
+            Ok(resource(amount))
         } else {
             Err(InsufficientResourceError::new(amount, self.input2_amount))
         }
@@ -183,7 +183,7 @@ impl<R: AssemblerRecipe> Assembler<R> {
         self.tick(tick);
         if self.input2_amount >= AMOUNT {
             self.input2_amount -= AMOUNT;
-            Ok(Bundle::new())
+            Ok(bundle())
         } else {
             Err(InsufficientResourceError::new(AMOUNT, self.input2_amount))
         }
@@ -194,7 +194,7 @@ impl<R: AssemblerRecipe> Assembler<R> {
         self.tick(tick);
         let amount = self.input2_amount;
         self.input2_amount = 0;
-        Resource::new(amount)
+        resource(amount)
     }
 
     /// Takes a specified amount of output resources from the assembler and puts it into a [`Resource`].
@@ -206,7 +206,7 @@ impl<R: AssemblerRecipe> Assembler<R> {
         self.tick(tick);
         if self.output_amount >= amount {
             self.output_amount -= amount;
-            Ok(Resource::new(amount))
+            Ok(resource(amount))
         } else {
             Err(InsufficientResourceError::new(amount, self.output_amount))
         }
@@ -220,7 +220,7 @@ impl<R: AssemblerRecipe> Assembler<R> {
         self.tick(tick);
         if self.output_amount >= AMOUNT {
             self.output_amount -= AMOUNT;
-            Ok(Bundle::new())
+            Ok(bundle())
         } else {
             Err(InsufficientResourceError::new(AMOUNT, self.output_amount))
         }
@@ -231,7 +231,7 @@ impl<R: AssemblerRecipe> Assembler<R> {
         self.tick(tick);
         let amount = self.output_amount;
         self.output_amount = 0;
-        Resource::new(amount)
+        resource(amount)
     }
 }
 
@@ -251,12 +251,10 @@ pub struct Furnace<R: FurnaceRecipe> {
     recipe: PhantomData<R>,
 }
 
-/// Input [`Bundle`] required to build a furnace.
-pub type FurnaceIronInput = Bundle<Iron, 10>;
-
 impl<R: FurnaceRecipe> Furnace<R> {
     /// Builds a furnace. Costs 10 iron.
-    pub fn build(tick: &Tick, _recipe: R, _iron: FurnaceIronInput) -> Self {
+    pub fn build(tick: &Tick, recipe: R, iron: Bundle<Iron, 10>) -> Self {
+        let _ = (recipe, iron);
         Self {
             input_amount: 0,
             output_amount: 0,
@@ -268,7 +266,8 @@ impl<R: FurnaceRecipe> Furnace<R> {
 
     /// Changes the [`Recipe`](crate::recipes) of the furnace.
     /// Returns the original furnace if the furnace has no inputs or outputs.
-    pub fn change_recipe<R2: FurnaceRecipe>(self, _recipe: R2) -> Result<Furnace<R2>, Furnace<R>> {
+    pub fn change_recipe<R2: FurnaceRecipe>(self, recipe: R2) -> Result<Furnace<R2>, Furnace<R>> {
+        let _ = recipe;
         if self.input_amount > 0 || self.output_amount > 0 {
             Err(self)
         } else {
@@ -328,7 +327,7 @@ impl<R: FurnaceRecipe> Furnace<R> {
         self.tick(tick);
         if self.input_amount >= amount {
             self.input_amount -= amount;
-            Ok(Resource::new(amount))
+            Ok(resource(amount))
         } else {
             Err(InsufficientResourceError::new(amount, self.input_amount))
         }
@@ -342,7 +341,7 @@ impl<R: FurnaceRecipe> Furnace<R> {
         self.tick(tick);
         if self.input_amount >= AMOUNT {
             self.input_amount -= AMOUNT;
-            Ok(Bundle::new())
+            Ok(bundle())
         } else {
             Err(InsufficientResourceError::new(AMOUNT, self.input_amount))
         }
@@ -353,7 +352,7 @@ impl<R: FurnaceRecipe> Furnace<R> {
         self.tick(tick);
         let amount = self.input_amount;
         self.input_amount = 0;
-        Resource::new(amount)
+        resource(amount)
     }
 
     /// Takes a specified amount of output resources from the furnace and puts it into a [`Resource`].
@@ -365,7 +364,7 @@ impl<R: FurnaceRecipe> Furnace<R> {
         self.tick(tick);
         if self.output_amount >= amount {
             self.output_amount -= amount;
-            Ok(Resource::new(amount))
+            Ok(resource(amount))
         } else {
             Err(InsufficientResourceError::new(amount, self.output_amount))
         }
@@ -379,7 +378,7 @@ impl<R: FurnaceRecipe> Furnace<R> {
         self.tick(tick);
         if self.output_amount >= AMOUNT {
             self.output_amount -= AMOUNT;
-            Ok(Bundle::new())
+            Ok(bundle())
         } else {
             Err(InsufficientResourceError::new(AMOUNT, self.output_amount))
         }
@@ -390,6 +389,6 @@ impl<R: FurnaceRecipe> Furnace<R> {
         self.tick(tick);
         let amount = self.output_amount;
         self.output_amount = 0;
-        Resource::new(amount)
+        resource(amount)
     }
 }

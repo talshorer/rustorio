@@ -1,14 +1,10 @@
 #![forbid(unsafe_code)]
 
-use rustorio::{
-    self, Bundle, Tick,
-    gamemodes::{self},
-    resources::Copper,
-};
+use rustorio::{self, Bundle, Tick, gamemodes::Tutorial, resources::Copper};
 
-type GameMode = gamemodes::Tutorial;
+type GameMode = Tutorial;
 
-type StartingResources = <GameMode as gamemodes::GameMode>::StartingResources;
+type StartingResources = <GameMode as rustorio::GameMode>::StartingResources;
 
 fn main() {
     rustorio::play::<GameMode>(user_main);

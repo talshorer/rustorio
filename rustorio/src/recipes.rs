@@ -3,11 +3,9 @@
 
 use std::fmt::Debug;
 
-use crate::{
-    ResourceType,
-    resources::{Copper, CopperOre, Iron, IronOre, Point, RedScience},
-    sealed::Sealed,
-};
+use rustorio_engine::{Sealed, research::RedScience, resources::ResourceType};
+
+use crate::resources::{Copper, CopperOre, Iron, IronOre, Point};
 
 /// Any recipe that implements this trait can be used in an [`Assembler`](crate::buildings::Assembler).
 pub trait AssemblerRecipe: Debug + Sealed {

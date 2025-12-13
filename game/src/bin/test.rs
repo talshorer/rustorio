@@ -1,23 +1,20 @@
 use rustorio::{
+    Research, Tick,
     buildings::{Assembler, Furnace},
-    gamemodes,
+    gamemodes::Standard,
     recipes::{CopperSmelting, IronSmelting, RedScienceRecipe},
-    research::Research,
     resources::Point,
 };
 
-type GameMode = gamemodes::Standard;
+type GameMode = Standard;
 
-type StartingResources = <GameMode as gamemodes::GameMode>::StartingResources;
+type StartingResources = <GameMode as rustorio::GameMode>::StartingResources;
 
 pub fn main() {
     rustorio::play::<GameMode>(user_main);
 }
 
-fn user_main(
-    mut tick: rustorio::Tick,
-    starting_resources: StartingResources,
-) -> (rustorio::Tick, rustorio::Bundle<Point, 10>) {
+fn user_main(mut tick: Tick, starting_resources: StartingResources) -> (Tick, rustorio::Bundle<Point, 10>) {
     tick.log(false);
 
     let StartingResources { iron, points_research } = starting_resources;

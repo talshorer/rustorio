@@ -7,7 +7,7 @@ use std::fmt::Display;
 /// If a function merely takes a [`&Tick`](Tick), or no [`Tick`]jj s at all, it will never advance the game time.
 #[derive(Debug)]
 pub struct Tick {
-    tick: u64,
+    pub tick: u64,
     log: bool,
 }
 

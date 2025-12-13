@@ -1,22 +1,13 @@
+use rustorio_engine::{
+    gamemodes::{GameMode, StartingResources},
+    resources::{Bundle, bundle},
+};
+
 use crate::{
-    Bundle,
     guide::Guide,
     research::PointsResearch,
     resources::{Copper, Iron, Point},
 };
-
-pub(crate) trait StartingResources {
-    fn init() -> Self;
-}
-
-/// A game mode defines the starting resources and victory conditions for a game.
-pub trait GameMode {
-    /// Starting resources provided to the player at the beginning of the game.
-    #[allow(private_bounds)]
-    type StartingResources: StartingResources;
-    /// Resources required to achieve victory.
-    type VictoryResources;
-}
 
 /// Starting resources for the tutorial game mode.
 pub struct TutorialStartingResources {
@@ -27,7 +18,7 @@ pub struct TutorialStartingResources {
 impl StartingResources for TutorialStartingResources {
     fn init() -> Self {
         Self {
-            iron: Bundle::new(),
+            iron: bundle(),
             guide: Guide,
         }
     }
@@ -49,7 +40,7 @@ pub struct StandardStartingResources {
 impl StartingResources for StandardStartingResources {
     fn init() -> Self {
         Self {
-            iron: Bundle::new(),
+            iron: bundle(),
             points_research: PointsResearch,
         }
     }

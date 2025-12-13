@@ -1,14 +1,10 @@
 use rustorio::{
-    self, Bundle, Resource, Tick,
-    buildings::Furnace,
-    gamemodes::{self},
-    recipes::CopperSmelting,
-    resources::Copper,
+    Bundle, Resource, Tick, buildings::Furnace, gamemodes::Tutorial, recipes::CopperSmelting, resources::Copper,
 };
 
-type GameMode = gamemodes::Tutorial;
+type GameMode = Tutorial;
 
-type StartingResources = <GameMode as gamemodes::GameMode>::StartingResources;
+type StartingResources = <GameMode as rustorio::GameMode>::StartingResources;
 
 fn main() {
     rustorio::play::<GameMode>(user_main);

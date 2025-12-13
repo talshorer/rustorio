@@ -1,7 +1,9 @@
 use std::process;
 
+use rustorio_engine::resources::ResourceType;
+
 use crate::{
-    Bundle, Resource, ResourceType, Tick,
+    Bundle, Resource, Tick,
     buildings::Furnace,
     recipes::FurnaceRecipe,
     resources::{Copper, CopperOre, Iron, IronOre},
