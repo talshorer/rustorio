@@ -1,6 +1,10 @@
-#![doc = include_str!("../../README.md")]
 #![feature(generic_const_exprs)]
 #![allow(incomplete_features)] // silence the “still incomplete” lint
+//! The core engine for Rustorio.
+//! Only relevant if you are writing a mod for Rustorio.
+//! To play the game, depend on the `rustorio` crate instead.
+//!
+//! For more information, see the [repo](https://github.com/albertsgarde/rustorio)
 
 pub mod gamemodes;
 pub mod research;

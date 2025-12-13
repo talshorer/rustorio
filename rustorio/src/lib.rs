@@ -1,3 +1,9 @@
+//! The base mod for Rustorio.
+//! Contains all the main content of the game.
+//! Your saves should depend on this crate.
+//!
+//! For more information, including help on getting started, see the [repo](https://github.com/albertsgarde/rustorio)
+
 pub mod buildings;
 pub mod gamemodes;
 pub mod guide;

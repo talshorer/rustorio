@@ -8,5 +8,5 @@ you can write the program so it compiles and doesn't panic, you win!"""
 license = "MIT OR Apache-2.0"
 readme = "../README.md"
 repository = "https://github.com/albertsgarde/rustorio"
-include = ["src", "Cargo.toml", "rust-toolchain", "examples/*_new_game.rs"]
-documentation = "https://docs.rs/rustorio"
+include = ["src", "Cargo.toml", "rust-toolchain"]
+documentation = "https://docs.rs/rustorio-engine"
