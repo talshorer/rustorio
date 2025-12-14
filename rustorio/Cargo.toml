@@ -1,6 +1,6 @@
 [package]
 name = "rustorio"
-version = "0.0.3"
+version = "0.0.4"
 edition = "2024"
 description = """The first game written and played entirely in Rust's type system. Not just do you play by
 writing Rust code, the rules of the game are enforced by the Rust compiler! If
@@ -16,7 +16,7 @@ default = ["cli"]
 cli = ["dep:clap", "dep:anyhow", "dep:dialoguer", "dep:thiserror"]
 
 [dependencies]
-rustorio-engine = { path = "../rustorio-engine", version = "0.0.3" }
+rustorio-engine = { path = "../rustorio-engine", version = "0.0.4" }
 
 anyhow = { version = "1.0.100", optional = true }
 clap = { version = "4.5.53", optional = true, features = ["derive"] }

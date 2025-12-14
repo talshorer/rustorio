@@ -257,7 +257,7 @@ dependencies = [
 
 [[package]]
 name = "rustorio"
-version = "0.0.3"
+version = "0.0.4"
 dependencies = [
  "anyhow",
  "clap",
@@ -268,7 +268,7 @@ dependencies = [
 
 [[package]]
 name = "rustorio-engine"
-version = "0.0.3"
+version = "0.0.4"
 
 [[package]]
 name = "shell-words"
