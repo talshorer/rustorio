@@ -13,7 +13,12 @@ use thiserror::Error;
 // Macro to build paths to game bin files relative to workspace root
 macro_rules! game_bin_file {
     ($gamemode:expr) => {
-        concat!(env!("CARGO_MANIFEST_DIR"), "/examples/", $gamemode, "_new_game.rs")
+        concat!(
+            env!("CARGO_MANIFEST_DIR"),
+            "/examples/",
+            $gamemode,
+            "_new_game.rs"
+        )
     };
 }
 
@@ -92,7 +97,10 @@ pub struct SetupArgs {
 impl SetupArgs {
     pub fn run(&self) -> Result<()> {
         if !self.path.exists() {
-            bail!("The specified path '{}' does not exist.", self.path.display());
+            bail!(
+                "The specified path '{}' does not exist.",
+                self.path.display()
+            );
         }
 
         let canonical_path = self
@@ -127,13 +135,15 @@ impl SetupArgs {
             .run()
             .context("Failed to add Rustorio as a dependency")?;
         fs::write(path.join("rustorio.toml"), "").context("Failed to create rustorio.toml")?;
-        fs::write(path.join("rust-toolchain"), RUST_TOOLCHAIN).context("Failed to create rust-toolchain file")?;
+        fs::write(path.join("rust-toolchain"), RUST_TOOLCHAIN)
+            .context("Failed to create rust-toolchain file")?;
         let save_path = path.join("src").join("bin");
         fs::create_dir_all(&save_path).context("Failed to create save directory")?;
         if self.include_tutorial {
             let tutorial_start_file = GameMode::Tutorial.start_file();
             let tutorial_save_dir = save_path.join("tutorial");
-            fs::create_dir_all(&tutorial_save_dir).context("Failed to create tutorial save directory")?;
+            fs::create_dir_all(&tutorial_save_dir)
+                .context("Failed to create tutorial save directory")?;
             fs::write(tutorial_save_dir.join("main.rs"), tutorial_start_file)
                 .context("Failed to create tutorial/main.rs")?;
         }
@@ -193,11 +203,15 @@ pub struct NewGameArgs {
 
 impl NewGameArgs {
     pub fn run(&self) -> Result<()> {
-        let rustorio_root = match find_rustorio_root().context("Failed while looking for Rustorio root")? {
+        let rustorio_root = match find_rustorio_root()
+            .context("Failed while looking for Rustorio root")?
+        {
             Some(path) => path,
             None => {
                 let setup_rustorio = Confirm::new()
-                    .with_prompt("Could not find 'rustorio.toml'. Do you want to set up Rustorio here?")
+                    .with_prompt(
+                        "Could not find 'rustorio.toml'. Do you want to set up Rustorio here?",
+                    )
                     .interact()
                     .context("Failed to confirm Rustorio setup")?;
                 if setup_rustorio {
@@ -212,7 +226,9 @@ impl NewGameArgs {
                         .canonicalize()
                         .context("Failed to canonicalize Rustorio path")?
                 } else {
-                    bail!("Can only run command in a Rustorio project. Please run 'rustorio setup' first.");
+                    bail!(
+                        "Can only run command in a Rustorio project. Please run 'rustorio setup' first."
+                    );
                 }
             }
         };
@@ -232,10 +248,15 @@ impl NewGameArgs {
             }
             fs::create_dir(saves_dir.join(save_game_name.as_str()).as_path())
                 .context("Failed to create save game directory")?;
-            (saves_dir.join(save_game_name.as_str()).join("main.rs"), save_game_name)
+            (
+                saves_dir.join(save_game_name.as_str()).join("main.rs"),
+                save_game_name,
+            )
         };
-        fs::create_dir_all(save_game_path.parent().unwrap()).context("Failed to create save game directory")?;
-        fs::write(save_game_path.as_path(), start_file).context("Failed to create save game file")?;
+        fs::create_dir_all(save_game_path.parent().unwrap())
+            .context("Failed to create save game directory")?;
+        fs::write(save_game_path.as_path(), start_file)
+            .context("Failed to create save game file")?;
         println!(
             "New game '{}' created at {}! For help getting started, go to https://albertsgarde.github.io/rustorio",
             save_game_name,

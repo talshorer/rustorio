@@ -27,7 +27,9 @@ pub fn play<G: GameMode>(main: fn(Tick, G::StartingResources) -> (Tick, G::Victo
     let mut call_once_ran = false;
     ONCE.call_once(|| call_once_ran = true);
     if !call_once_ran {
-        panic!("play() can only be called once per program execution to prevent cheating via multithreading.");
+        panic!(
+            "play() can only be called once per program execution to prevent cheating via multithreading."
+        );
     }
     let tick = Tick::start();
     let start_resources = G::StartingResources::init();

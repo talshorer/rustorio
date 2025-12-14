@@ -1,5 +1,6 @@
 use rustorio::{
-    Bundle, Resource, Tick, buildings::Furnace, gamemodes::Tutorial, recipes::CopperSmelting, resources::Copper,
+    Bundle, Resource, Tick, buildings::Furnace, gamemodes::Tutorial, recipes::CopperSmelting,
+    resources::Copper,
 };
 
 type GameMode = Tutorial;

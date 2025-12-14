@@ -36,7 +36,12 @@ pub struct Assembler<R: AssemblerRecipe> {
 
 impl<R: AssemblerRecipe> Assembler<R> {
     /// Builds an assembler. Costs 15 iron and 10 copper.
-    pub fn build(tick: &Tick, recipe: R, iron: Bundle<Iron, 15>, copper: Bundle<Copper, 10>) -> Self {
+    pub fn build(
+        tick: &Tick,
+        recipe: R,
+        iron: Bundle<Iron, 15>,
+        copper: Bundle<Copper, 10>,
+    ) -> Self {
         let _ = (recipe, iron, copper);
         Self {
             input1: Resource::new_empty(),
@@ -50,7 +55,10 @@ impl<R: AssemblerRecipe> Assembler<R> {
 
     /// Changes the [`Recipe`](crate::recipes) of the assembler.
     /// Returns the original assembler if the assembler has no inputs or outputs.
-    pub fn change_recipe<R2: AssemblerRecipe>(self, recipe: R2) -> Result<Assembler<R2>, Assembler<R>> {
+    pub fn change_recipe<R2: AssemblerRecipe>(
+        self,
+        recipe: R2,
+    ) -> Result<Assembler<R2>, Assembler<R>> {
         let _ = recipe;
         if self.input1.amount() > 0 || self.input2.amount() > 0 || self.output.amount() > 0 {
             Err(self)

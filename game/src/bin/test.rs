@@ -14,7 +14,10 @@ pub fn main() {
     rustorio::play::<GameMode>(user_main);
 }
 
-fn user_main(mut tick: Tick, starting_resources: StartingResources) -> (Tick, rustorio::Bundle<Point, 10>) {
+fn user_main(
+    mut tick: Tick,
+    starting_resources: StartingResources,
+) -> (Tick, rustorio::Bundle<Point, 10>) {
     tick.log(false);
 
     let StartingResources {
@@ -43,7 +46,9 @@ fn user_main(mut tick: Tick, starting_resources: StartingResources) -> (Tick, ru
 
     let mut furnace = furnace.change_recipe(CopperSmelting).unwrap();
 
-    furnace.input(&tick).add(copper_ore.bundle::<200>().unwrap());
+    furnace
+        .input(&tick)
+        .add(copper_ore.bundle::<200>().unwrap());
     tick.advance_until(|tick| furnace.input(tick).amount() == 0, u64::MAX);
 
     let mut copper = furnace.output(&tick).empty();
