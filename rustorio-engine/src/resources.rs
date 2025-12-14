@@ -96,7 +96,7 @@ pub fn resource<Content: ResourceType>(amount: u32) -> Resource<Content> {
 
 impl<Content: ResourceType> Resource<Content> {
     /// Creates a new empty [`Resource`].
-    pub fn empty() -> Self {
+    pub fn new_empty() -> Self {
         Self {
             amount: 0,
             phantom: PhantomData,
@@ -134,6 +134,24 @@ impl<Content: ResourceType> Resource<Content> {
         } else {
             Err(InsufficientResourceError::new(amount, self.amount))
         }
+    }
+
+    /// Empties this [`Resource`], returning all contained resources as a new [`Resource`].
+    pub fn empty(&mut self) -> Self {
+        let amount = self.amount;
+        self.amount = 0;
+        Resource::new(amount)
+    }
+
+    /// Empties this [`Resource`] into another [`Resource`], transferring all contained resources.
+    pub fn empty_into(&mut self, other: &mut Self) {
+        other.amount += self.amount;
+        self.amount = 0;
+    }
+
+    /// Adds the entire contents of another resource container to this one.
+    pub fn add(&mut self, other: impl Into<Self>) {
+        self.amount += other.into().amount();
     }
 
     /// Consumes a [`Bundle`] of the same resource type and adds the contained resources to this [`Resource`].
