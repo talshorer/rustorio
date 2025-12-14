@@ -8,7 +8,7 @@ use std::fmt::Display;
 #[derive(Debug)]
 pub struct Tick {
     /// The current tick number.
-    pub tick: u64,
+    tick: u64,
     log: bool,
 }
 

@@ -84,7 +84,7 @@ impl<Resource: ResourceType> Display for InsufficientResourceError<Resource> {
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Resource<Content: ResourceType> {
     /// The amount of the resource contained in this [`Resource`].
-    pub amount: u32,
+    amount: u32,
     phantom: PhantomData<Content>,
 }
 
