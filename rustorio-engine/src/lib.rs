@@ -8,6 +8,8 @@
 //! For more information, see the [repo](https://github.com/albertsgarde/rustorio)
 
 pub mod gamemodes;
+pub mod machine;
+pub mod recipe;
 pub mod research;
 mod resources;
 mod tick;

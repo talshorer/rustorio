@@ -7,12 +7,10 @@
 //! When created, a building is set to a specific [`Recipe`](crate::recipes), which defines the inputs and outputs.
 //! This can be changed using the `change_recipe` method, but only if the building is empty (no inputs or outputs).
 
-use std::marker::PhantomData;
-
-use rustorio_engine::{bundle, resource};
+use rustorio_engine::{machine::Machine, recipe::Recipe};
 
 use crate::{
-    Bundle, InsufficientResourceError, Resource, Tick,
+    Bundle, Tick,
     recipes::{AssemblerRecipe, FurnaceRecipe},
     resources::{Copper, Iron},
 };
@@ -25,211 +23,32 @@ use crate::{
 /// Outputs can be extracted using [`take_output`](Assembler::take_output) or similar.
 /// If you want to change the recipe, use [`change_recipe`](Assembler::change_recipe), but ensure the assembler is empty first.
 #[derive(Debug)]
-pub struct Assembler<R: AssemblerRecipe> {
-    input1_amount: u32,
-    input2_amount: u32,
-    output_amount: u32,
-    tick: u64,
-    crafting_time: u64,
-    recipe: PhantomData<R>,
-}
+pub struct Assembler<R: AssemblerRecipe>(Machine<R>);
 
 impl<R: AssemblerRecipe> Assembler<R> {
     /// Builds an assembler. Costs 15 iron and 10 copper.
     pub fn build(tick: &Tick, recipe: R, iron: Bundle<Iron, 15>, copper: Bundle<Copper, 10>) -> Self {
         let _ = (recipe, iron, copper);
-        Self {
-            input1_amount: 0,
-            input2_amount: 0,
-            output_amount: 0,
-            tick: tick.cur(),
-            crafting_time: 0,
-            recipe: PhantomData,
-        }
+        Self(Machine::new(tick))
     }
 
     /// Changes the [`Recipe`](crate::recipes) of the assembler.
-    /// Returns the original assembler if the assembler has no inputs or outputs.
+    /// Returns the original assembler if the assembler has any inputs or outputs.
     pub fn change_recipe<R2: AssemblerRecipe>(self, recipe: R2) -> Result<Assembler<R2>, Assembler<R>> {
-        let _ = recipe;
-        if self.input1_amount > 0 || self.input2_amount > 0 || self.output_amount > 0 {
-            Err(self)
-        } else {
-            Ok(Assembler {
-                input1_amount: 0,
-                input2_amount: 0,
-                output_amount: 0,
-                tick: self.tick,
-                crafting_time: 0,
-                recipe: PhantomData::<R2>,
-            })
+        match self.0.change_recipe(recipe) {
+            Ok(machine) => Ok(Assembler(machine)),
+            Err(machine) => Err(Assembler(machine)),
         }
     }
 
-    fn tick(&mut self, tick: &Tick) {
-        assert!(tick.cur() >= self.tick, "Tick must be non-decreasing");
-
-        self.crafting_time += tick.cur() - self.tick;
-        let &count = [
-            (self.crafting_time / R::TIME).try_into().unwrap(),
-            self.input1_amount / R::INPUT1_AMOUNT,
-            self.input2_amount / R::INPUT2_AMOUNT,
-        ]
-        .iter()
-        .min()
-        .unwrap();
-
-        self.input1_amount -= count * R::INPUT1_AMOUNT;
-        self.input2_amount -= count * R::INPUT2_AMOUNT;
-        self.output_amount += count * R::OUTPUT_AMOUNT;
-        self.crafting_time -= u64::from(count) * R::TIME;
-
-        if self.input1_amount < R::INPUT1_AMOUNT || self.input2_amount < R::INPUT2_AMOUNT {
-            self.crafting_time = 0;
-        }
-
-        self.tick = tick.cur();
+    /// Update internal state and access input buffers.
+    pub fn inputs(&mut self, tick: &Tick) -> &mut <R as Recipe>::Inputs {
+        self.0.inputs(tick)
     }
 
-    /// How much of input resource 1 is currently in the assembler.
-    pub fn cur_input1(&mut self, tick: &Tick) -> u32 {
-        self.tick(tick);
-        self.input1_amount
-    }
-
-    /// How much of input resource 2 is currently in the assembler.
-    pub fn cur_input2(&mut self, tick: &Tick) -> u32 {
-        self.tick(tick);
-        self.input2_amount
-    }
-
-    /// How much of the output resource is currently in the assembler.
-    pub fn cur_output(&mut self, tick: &Tick) -> u32 {
-        self.tick(tick);
-        self.output_amount
-    }
-
-    /// Consumes a [`Resource`] and puts the contained resources into the assembler as input resource 1.
-    pub fn add_input1(&mut self, tick: &Tick, ore: impl Into<Resource<R::Input1>>) {
-        self.tick(tick);
-        self.input1_amount += ore.into().amount();
-    }
-
-    /// Consumes a [`Resource`] and puts the contained resources into the assembler as input resource 2.
-    pub fn add_input2(&mut self, tick: &Tick, ore: impl Into<Resource<R::Input2>>) {
-        self.tick(tick);
-        self.input2_amount += ore.into().amount();
-    }
-
-    /// Takes a specified amount of input resource 1 from the assembler and puts it into a [`Resource`].
-    pub fn take_input1(
-        &mut self,
-        tick: &Tick,
-        amount: u32,
-    ) -> Result<Resource<R::Input1>, InsufficientResourceError<R::Input1>> {
-        self.tick(tick);
-        if self.input1_amount >= amount {
-            self.input1_amount -= amount;
-            Ok(resource(amount))
-        } else {
-            Err(InsufficientResourceError::new(amount, self.input1_amount))
-        }
-    }
-
-    /// Takes a specified amount of input resource 1 from the assembler and puts it into a [`Bundle`].
-    pub fn take_input1_bundle<const AMOUNT: u32>(
-        &mut self,
-        tick: &Tick,
-    ) -> Result<Bundle<R::Input1, AMOUNT>, InsufficientResourceError<R::Input1>> {
-        self.tick(tick);
-        if self.input1_amount >= AMOUNT {
-            self.input1_amount -= AMOUNT;
-            Ok(bundle())
-        } else {
-            Err(InsufficientResourceError::new(AMOUNT, self.input1_amount))
-        }
-    }
-
-    /// Takes all input resource 1 currently in the assembler and puts it into a [`Resource`].
-    pub fn empty_input1(&mut self, tick: &Tick) -> Resource<R::Input1> {
-        self.tick(tick);
-        let amount = self.input1_amount;
-        self.input1_amount = 0;
-        resource(amount)
-    }
-
-    /// Takes a specified amount of input resource 2 from the assembler and puts it into a [`Resource`].
-    pub fn take_input2(
-        &mut self,
-        tick: &Tick,
-        amount: u32,
-    ) -> Result<Resource<R::Input2>, InsufficientResourceError<R::Input2>> {
-        self.tick(tick);
-        if self.input2_amount >= amount {
-            self.input2_amount -= amount;
-            Ok(resource(amount))
-        } else {
-            Err(InsufficientResourceError::new(amount, self.input2_amount))
-        }
-    }
-
-    /// Takes a specified amount of input resource 2 from the assembler and puts it into a [`Bundle`].
-    pub fn take_input2_bundle<const AMOUNT: u32>(
-        &mut self,
-        tick: &Tick,
-    ) -> Result<Bundle<R::Input2, AMOUNT>, InsufficientResourceError<R::Input2>> {
-        self.tick(tick);
-        if self.input2_amount >= AMOUNT {
-            self.input2_amount -= AMOUNT;
-            Ok(bundle())
-        } else {
-            Err(InsufficientResourceError::new(AMOUNT, self.input2_amount))
-        }
-    }
-
-    /// Takes all input resource 2 currently in the assembler and puts it into a [`Resource`].
-    pub fn empty_input2(&mut self, tick: &Tick) -> Resource<R::Input2> {
-        self.tick(tick);
-        let amount = self.input2_amount;
-        self.input2_amount = 0;
-        resource(amount)
-    }
-
-    /// Takes a specified amount of output resources from the assembler and puts it into a [`Resource`].
-    pub fn take_output(
-        &mut self,
-        tick: &Tick,
-        amount: u32,
-    ) -> Result<Resource<R::Output>, InsufficientResourceError<R::Output>> {
-        self.tick(tick);
-        if self.output_amount >= amount {
-            self.output_amount -= amount;
-            Ok(resource(amount))
-        } else {
-            Err(InsufficientResourceError::new(amount, self.output_amount))
-        }
-    }
-
-    /// Takes a specified amount of output resources from the assembler and puts it into a [`Bundle`].
-    pub fn take_output_bundle<const AMOUNT: u32>(
-        &mut self,
-        tick: &Tick,
-    ) -> Result<Bundle<R::Output, AMOUNT>, InsufficientResourceError<R::Output>> {
-        self.tick(tick);
-        if self.output_amount >= AMOUNT {
-            self.output_amount -= AMOUNT;
-            Ok(bundle())
-        } else {
-            Err(InsufficientResourceError::new(AMOUNT, self.output_amount))
-        }
-    }
-
-    /// Takes all output resources currently in the assembler and puts it into a [`Resource`].
-    pub fn empty_output(&mut self, tick: &Tick) -> Resource<R::Output> {
-        self.tick(tick);
-        let amount = self.output_amount;
-        self.output_amount = 0;
-        resource(amount)
+    /// Update internal state and access output buffers.
+    pub fn outputs(&mut self, tick: &Tick) -> &mut <R as Recipe>::Outputs {
+        self.0.outputs(tick)
     }
 }
 
@@ -241,152 +60,31 @@ impl<R: AssemblerRecipe> Assembler<R> {
 /// Outputs can be extracted using [`take_output`](Furnace::take_output) or similar.
 /// If you want to change the recipe, use [`change_recipe`](Furnace::change_recipe), but ensure the furnace is empty first.
 #[derive(Debug)]
-pub struct Furnace<R: FurnaceRecipe> {
-    input_amount: u32,
-    output_amount: u32,
-    tick: u64,
-    crafting_time: u64,
-    recipe: PhantomData<R>,
-}
+pub struct Furnace<R: FurnaceRecipe>(Machine<R>);
 
 impl<R: FurnaceRecipe> Furnace<R> {
     /// Builds a furnace. Costs 10 iron.
     pub fn build(tick: &Tick, recipe: R, iron: Bundle<Iron, 10>) -> Self {
         let _ = (recipe, iron);
-        Self {
-            input_amount: 0,
-            output_amount: 0,
-            tick: tick.cur(),
-            crafting_time: 0,
-            recipe: PhantomData,
-        }
+        Self(Machine::new(tick))
     }
 
     /// Changes the [`Recipe`](crate::recipes) of the furnace.
     /// Returns the original furnace if the furnace has no inputs or outputs.
     pub fn change_recipe<R2: FurnaceRecipe>(self, recipe: R2) -> Result<Furnace<R2>, Furnace<R>> {
-        let _ = recipe;
-        if self.input_amount > 0 || self.output_amount > 0 {
-            Err(self)
-        } else {
-            Ok(Furnace {
-                input_amount: 0,
-                output_amount: 0,
-                tick: self.tick,
-                crafting_time: 0,
-                recipe: PhantomData::<R2>,
-            })
+        match self.0.change_recipe(recipe) {
+            Ok(machine) => Ok(Furnace(machine)),
+            Err(machine) => Err(Furnace(machine)),
         }
     }
 
-    fn tick(&mut self, tick: &Tick) {
-        assert!(tick.cur() >= self.tick, "Tick must be non-decreasing");
-
-        self.crafting_time += tick.cur() - self.tick;
-        let count = u32::min(
-            (self.crafting_time / R::TIME).try_into().unwrap(),
-            self.input_amount / R::INPUT_AMOUNT,
-        );
-        self.input_amount -= count * R::INPUT_AMOUNT;
-        self.output_amount += count * R::OUTPUT_AMOUNT;
-        self.crafting_time -= u64::from(count) * R::TIME;
-
-        if self.input_amount < R::INPUT_AMOUNT {
-            self.crafting_time = 0;
-        }
-
-        self.tick = tick.cur();
+    /// Update internal state and access input buffers.
+    pub fn inputs(&mut self, tick: &Tick) -> &mut <R as Recipe>::Inputs {
+        self.0.inputs(tick)
     }
 
-    /// How much of the input resource is currently in the furnace.
-    pub fn cur_input(&mut self, tick: &Tick) -> u32 {
-        self.tick(tick);
-        self.input_amount
-    }
-
-    /// How much of the output resource is currently in the furnace.
-    pub fn cur_output(&mut self, tick: &Tick) -> u32 {
-        self.tick(tick);
-        self.output_amount
-    }
-
-    /// Consumes a [`Resource`] and puts the contained resources into the furnace.
-    pub fn add_input(&mut self, tick: &Tick, ore: impl Into<Resource<R::Input>>) {
-        self.tick(tick);
-        self.input_amount += ore.into().amount();
-    }
-
-    /// Takes a specified amount of input resources from the furnace and puts it into a [`Resource`].
-    pub fn take_input(
-        &mut self,
-        tick: &Tick,
-        amount: u32,
-    ) -> Result<Resource<R::Input>, InsufficientResourceError<R::Input>> {
-        self.tick(tick);
-        if self.input_amount >= amount {
-            self.input_amount -= amount;
-            Ok(resource(amount))
-        } else {
-            Err(InsufficientResourceError::new(amount, self.input_amount))
-        }
-    }
-
-    /// Takes a specified amount of input resources from the furnace and puts it into a [`Bundle`].
-    pub fn take_input_bundle<const AMOUNT: u32>(
-        &mut self,
-        tick: &Tick,
-    ) -> Result<Bundle<R::Input, AMOUNT>, InsufficientResourceError<R::Input>> {
-        self.tick(tick);
-        if self.input_amount >= AMOUNT {
-            self.input_amount -= AMOUNT;
-            Ok(bundle())
-        } else {
-            Err(InsufficientResourceError::new(AMOUNT, self.input_amount))
-        }
-    }
-
-    /// Takes all input resources currently in the furnace and puts it into a [`Resource`].
-    pub fn empty_input(&mut self, tick: &Tick) -> Resource<R::Input> {
-        self.tick(tick);
-        let amount = self.input_amount;
-        self.input_amount = 0;
-        resource(amount)
-    }
-
-    /// Takes a specified amount of output resources from the furnace and puts it into a [`Resource`].
-    pub fn take_output(
-        &mut self,
-        tick: &Tick,
-        amount: u32,
-    ) -> Result<Resource<R::Output>, InsufficientResourceError<R::Output>> {
-        self.tick(tick);
-        if self.output_amount >= amount {
-            self.output_amount -= amount;
-            Ok(resource(amount))
-        } else {
-            Err(InsufficientResourceError::new(amount, self.output_amount))
-        }
-    }
-
-    /// Takes a specified amount of output resources from the furnace and puts it into a [`Bundle`].
-    pub fn take_output_bundle<const AMOUNT: u32>(
-        &mut self,
-        tick: &Tick,
-    ) -> Result<Bundle<R::Output, AMOUNT>, InsufficientResourceError<R::Output>> {
-        self.tick(tick);
-        if self.output_amount >= AMOUNT {
-            self.output_amount -= AMOUNT;
-            Ok(bundle())
-        } else {
-            Err(InsufficientResourceError::new(AMOUNT, self.output_amount))
-        }
-    }
-
-    /// Takes all output resources currently in the furnace and puts it into a [`Resource`].
-    pub fn empty_output(&mut self, tick: &Tick) -> Resource<R::Output> {
-        self.tick(tick);
-        let amount = self.output_amount;
-        self.output_amount = 0;
-        resource(amount)
+    /// Update internal state and access output buffers.
+    pub fn outputs(&mut self, tick: &Tick) -> &mut <R as Recipe>::Outputs {
+        self.0.outputs(tick)
     }
 }
