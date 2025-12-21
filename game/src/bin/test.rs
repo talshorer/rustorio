@@ -14,7 +14,10 @@ pub fn main() {
     rustorio::play::<GameMode>(user_main);
 }
 
-fn user_main(mut tick: Tick, starting_resources: StartingResources) -> (Tick, rustorio::Bundle<Point, 10>) {
+fn user_main(
+    mut tick: Tick,
+    starting_resources: StartingResources,
+) -> (Tick, rustorio::Bundle<Point, 10>) {
     tick.log(false);
 
     let StartingResources {
@@ -26,8 +29,10 @@ fn user_main(mut tick: Tick, starting_resources: StartingResources) -> (Tick, ru
 
     let iron_ore = rustorio::mine_iron::<500>(&mut tick);
 
-    let mut copper_ore = rustorio::Resource::empty();
+
     furnace.inputs(&tick).0.add(iron_ore.to_resource());
+  
+    let mut copper_ore = rustorio::Resource::new_empty();
     while furnace.inputs(&tick).0.cur() > 0 {
         copper_ore += rustorio::mine_copper::<1>(&mut tick);
     }

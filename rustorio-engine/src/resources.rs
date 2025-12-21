@@ -96,7 +96,7 @@ pub fn resource<Content: ResourceType>(amount: u32) -> Resource<Content> {
 
 impl<Content: ResourceType> Resource<Content> {
     /// Creates a new empty [`Resource`].
-    pub fn empty() -> Self {
+    pub fn new_empty() -> Self {
         Self {
             amount: 0,
             phantom: PhantomData,
@@ -136,13 +136,33 @@ impl<Content: ResourceType> Resource<Content> {
         }
     }
 
+    /// Empties this [`Resource`], returning all contained resources as a new [`Resource`].
+    pub fn empty(&mut self) -> Self {
+        let amount = self.amount;
+        self.amount = 0;
+        Resource::new(amount)
+    }
+
+    /// Empties this [`Resource`] into another [`Resource`], transferring all contained resources.
+    pub fn empty_into(&mut self, other: &mut Self) {
+        other.amount += self.amount;
+        self.amount = 0;
+    }
+
+    /// Adds the entire contents of another resource container to this one.
+    pub fn add(&mut self, other: impl Into<Self>) {
+        self.amount += other.into().amount();
+    }
+
     /// Consumes a [`Bundle`] of the same resource type and adds the contained resources to this [`Resource`].
     pub fn add_bundle<const AMOUNT: u32>(&mut self, bundle: Bundle<Content, AMOUNT>) {
         self.amount += bundle.amount();
     }
 
     /// Takes a specified amount of resources from this [`Resource`] and puts it into a [`Bundle`].
-    pub fn bundle<const AMOUNT: u32>(&mut self) -> Result<Bundle<Content, AMOUNT>, InsufficientResourceError<Content>> {
+    pub fn bundle<const AMOUNT: u32>(
+        &mut self,
+    ) -> Result<Bundle<Content, AMOUNT>, InsufficientResourceError<Content>> {
         if let Some(remaining) = self.amount.checked_sub(AMOUNT) {
             self.amount = remaining;
             Ok(Bundle::new())
@@ -224,7 +244,9 @@ impl<Content: ResourceType, const AMOUNT: u32> Bundle<Content, AMOUNT> {
 
     /// Splits this [`Bundle`] into two smaller [`Bundle`]s with the specified amounts.
     /// The sum of `AMOUNT1` and `AMOUNT2` must equal the amount of this [`Bundle`].
-    pub fn split<const AMOUNT1: u32, const AMOUNT2: u32>(self) -> (Bundle<Content, AMOUNT1>, Bundle<Content, AMOUNT2>)
+    pub fn split<const AMOUNT1: u32, const AMOUNT2: u32>(
+        self,
+    ) -> (Bundle<Content, AMOUNT1>, Bundle<Content, AMOUNT2>)
     where
         // Enforce that AMOUNT1 + AMOUNT2 == AMOUNT at compile time
         [(); AMOUNT as usize - (AMOUNT1 as usize + AMOUNT2 as usize)]:,
@@ -239,7 +261,9 @@ impl<Content: ResourceType, const AMOUNT: u32> Bundle<Content, AMOUNT> {
     }
 }
 
-impl<Content: ResourceType, const AMOUNT: u32> AddAssign<Bundle<Content, AMOUNT>> for Resource<Content> {
+impl<Content: ResourceType, const AMOUNT: u32> AddAssign<Bundle<Content, AMOUNT>>
+    for Resource<Content>
+{
     fn add_assign(&mut self, bundle: Bundle<Content, AMOUNT>) {
         let _ = bundle;
         self.amount += AMOUNT;
@@ -264,8 +288,8 @@ impl<Content: ResourceType, const AMOUNT: u32> Add<Resource<Content>> for Bundle
     }
 }
 
-impl<Content: ResourceType, const AMOUNT_LHS: u32, const AMOUNT_RHS: u32> Add<Bundle<Content, AMOUNT_RHS>>
-    for Bundle<Content, AMOUNT_LHS>
+impl<Content: ResourceType, const AMOUNT_LHS: u32, const AMOUNT_RHS: u32>
+    Add<Bundle<Content, AMOUNT_RHS>> for Bundle<Content, AMOUNT_LHS>
 where
     [(); { AMOUNT_LHS + AMOUNT_RHS } as usize]:,
 {

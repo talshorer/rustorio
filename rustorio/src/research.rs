@@ -19,7 +19,10 @@ impl Technology for PointsTechnology {
     const RED_SCIENCE_COST: u32 = 5;
     type Unlocks = PointRecipe;
 
-    fn research(self, red_science: Bundle<RedScience, { Self::RED_SCIENCE_COST }>) -> Self::Unlocks {
+    fn research(
+        self,
+        red_science: Bundle<RedScience, { Self::RED_SCIENCE_COST }>,
+    ) -> Self::Unlocks {
         let _ = red_science;
         PointRecipe {}
     }

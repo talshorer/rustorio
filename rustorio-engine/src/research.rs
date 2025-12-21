@@ -18,5 +18,6 @@ pub trait Technology: Sealed {
     type Unlocks;
 
     /// Carries out the research by consuming the required science packs and the research itself, returning whatever this research unlocks.
-    fn research(self, red_science: Bundle<RedScience, { Self::RED_SCIENCE_COST }>) -> Self::Unlocks;
+    fn research(self, red_science: Bundle<RedScience, { Self::RED_SCIENCE_COST }>)
+    -> Self::Unlocks;
 }

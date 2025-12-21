@@ -257,7 +257,7 @@ dependencies = [
 
 [[package]]
 name = "rustorio"
-version = "0.0.4"
+version = "0.0.5"
 dependencies = [
  "anyhow",
  "clap",
@@ -277,7 +277,7 @@ dependencies = [
 
 [[package]]
 name = "rustorio-engine"
-version = "0.0.4"
+version = "0.0.5"
 dependencies = [
  "rustorio-derive",
 ]

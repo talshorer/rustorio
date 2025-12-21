@@ -1,6 +1,3 @@
-play:
-    cargo play
-
 doc *FLAGS:
     cargo doc -p rustorio -p rustorio-engine -p rustorio-derive --no-deps {{ FLAGS }}
 

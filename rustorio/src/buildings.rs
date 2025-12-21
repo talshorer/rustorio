@@ -27,7 +27,12 @@ pub struct Assembler<R: AssemblerRecipe>(Machine<R>);
 
 impl<R: AssemblerRecipe> Assembler<R> {
     /// Builds an assembler. Costs 15 iron and 10 copper.
-    pub fn build(tick: &Tick, recipe: R, iron: Bundle<Iron, 15>, copper: Bundle<Copper, 10>) -> Self {
+    pub fn build(
+        tick: &Tick,
+        recipe: R,
+        iron: Bundle<Iron, 15>,
+        copper: Bundle<Copper, 10>,
+    ) -> Self {
         let _ = (recipe, iron, copper);
         Self(Machine::new(tick))
     }
