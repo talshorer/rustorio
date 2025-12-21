@@ -1,8 +1,8 @@
 //! Buildings take inputs to produce outputs over time.
 //!
 //! To use a building, you must first build it which takes a number of resources.
-//! Then you can add inputs to it using `add_input` or similar functions.
-//! Once it has sufficient inputs, it will start producing outputs, which can be extracted using `take_output` or similar functions.
+//! Then you can add inputs to it using `inputs`.
+//! Once it has sufficient inputs, it will start producing outputs, which can be extracted using `outputs`.
 //!
 //! When created, a building is set to a specific [`Recipe`](crate::recipes), which defines the inputs and outputs.
 //! This can be changed using the `change_recipe` method, but only if the building is empty (no inputs or outputs).
@@ -18,9 +18,9 @@ use crate::{
 /// The assembler is used for recipes that require two different inputs to produce an output.
 ///
 /// To use, first build the assembler using [`Assembler::build`], providing the desired recipe and the required resources.
-/// Then, add inputs using [`add_input1`](Assembler::add_input1) and [`add_input2`](Assembler::add_input2).
+/// Then, add inputs using [`inputs`](Assembler::inputs), for example `assembler.inputs(&tick).0.add(bundle)`.
 /// The assembler will automatically process the inputs over time, which can be advanced using the [`Tick`].
-/// Outputs can be extracted using [`take_output`](Assembler::take_output) or similar.
+/// Outputs can be extracted using [`outputs`](Assembler::outputs), for example `assembler.outputs(&tick).0.bundle::<1>()`.
 /// If you want to change the recipe, use [`change_recipe`](Assembler::change_recipe), but ensure the assembler is empty first.
 #[derive(Debug)]
 pub struct Assembler<R: AssemblerRecipe>(Machine<R>);
@@ -39,7 +39,10 @@ impl<R: AssemblerRecipe> Assembler<R> {
 
     /// Changes the [`Recipe`](crate::recipes) of the assembler.
     /// Returns the original assembler if the assembler has any inputs or outputs.
-    pub fn change_recipe<R2: AssemblerRecipe>(self, recipe: R2) -> Result<Assembler<R2>, Assembler<R>> {
+    pub fn change_recipe<R2: AssemblerRecipe>(
+        self,
+        recipe: R2,
+    ) -> Result<Assembler<R2>, Assembler<R>> {
         match self.0.change_recipe(recipe) {
             Ok(machine) => Ok(Assembler(machine)),
             Err(machine) => Err(Assembler(machine)),
@@ -60,9 +63,9 @@ impl<R: AssemblerRecipe> Assembler<R> {
 /// The furnace is used to smelt ores into base resources.
 ///
 /// To use, first build the furnace using [`Furnace::build`], providing the desired recipe and the required resources.
-/// Then, add inputs using [`add_input`](Furnace::add_input).
+/// Then, add inputs using [`inputs`](Furnace::inputs), for example `furnamce.inputs(&tick).0.add(bundle)`.
 /// The furnace will automatically process the inputs over time, which can be advanced using the [`Tick`].
-/// Outputs can be extracted using [`take_output`](Furnace::take_output) or similar.
+/// Outputs can be extracted using [`outputs`](Furnace::outputs), for example `furnace.outputs(&tick).0.bundle::<1>()`.
 /// If you want to change the recipe, use [`change_recipe`](Furnace::change_recipe), but ensure the furnace is empty first.
 #[derive(Debug)]
 pub struct Furnace<R: FurnaceRecipe>(Machine<R>);
