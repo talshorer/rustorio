@@ -12,4 +12,4 @@ include = ["src", "Cargo.toml", "rust-toolchain"]
 documentation = "https://docs.rs/rustorio-engine"
 
 [dependencies]
-rustorio-derive = { path = "../rustorio-derive", version = "0.0.4" }
+rustorio-derive = { path = "../rustorio-derive", version = "0.0.5" }
