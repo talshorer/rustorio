@@ -27,8 +27,8 @@ You can use this to create a [`Furnace`](https://docs.rs/rustorio/latest/rustori
 
     let copper_ore = rustorio::mine_copper::<8>(&mut tick);
 
-    furnace.add_input(&tick, copper_ore);
-    tick.advance_until(|tick| furnace.cur_output(tick) > 0, 100);
+    furnace.inputs(&tick).0.add(copper_ore);
+    tick.advance_until(|tick| furnace.outputs(tick).0.amount() >= 1, 100);
 ```
 
 Because none of these types implement `Copy` or `Clone` and because they all have hidden fields, the only way (I hope) to create them is through the use of other resources, or in the case of ore, [time](https://docs.rs/rustorio/latest/rustorio/struct.Tick.html).
