@@ -56,7 +56,7 @@ fn derive_recipe_process_attr(
 
     let amount_type_ident = Ident::new(amount_type_name, Span::call_site());
     let amount_const_ident = Ident::new(amount_const_name, Span::call_site());
-    let amount_types = per_type.iter().map(|_| quote! {u32});
+    let amount_types = per_type.iter().map(|_| quote! {u32}).collect::<Vec<_>>();
     let amounts = per_type.iter().map(|(amount, _)| amount);
 
     let item_type_ident = Ident::new(item_type_name, Span::call_site());
@@ -84,7 +84,7 @@ fn derive_recipe_process_attr(
             type #item_type_ident = (#(#recipe_items,)*);
 
             type #amount_type_ident = (#(#amount_types,)*);
-            const #amount_const_ident: Self::#amount_type_ident = (#(#amounts,)*);
+            const #amount_const_ident: (#(#amount_types,)*) = (#(#amounts,)*);
         },
         quote! {
             fn #new_fn_ident() -> Self::#item_type_ident {
