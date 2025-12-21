@@ -52,7 +52,7 @@ pub mod mod_reexports {
     pub use crate::{
         gamemodes::GameMode,
         play,
-        research::Technology,
+        research::{RedScience, Technology},
         resources::{Bundle, InsufficientResourceError, Resource},
         tick::Tick,
     };
