@@ -86,17 +86,21 @@ pub trait Recipe {
     /// for one cycle of the recipe.
     type Outputs: std::fmt::Debug;
 
+    #[doc(hidden)] // https://github.com/rust-lang/rust/issues/113863
     /// The type for `Self::InputAmountsType`, which is used to allow users to
     /// access the input amount for each of the input resource types, per recipe cycle.
     type InputAmountsType: std::fmt::Debug;
 
+    #[doc(hidden)] // https://github.com/rust-lang/rust/issues/113863
     /// Amount for each of the input resource types, per recipe cycle.
     const INPUT_AMOUNTS: Self::InputAmountsType;
 
+    #[doc(hidden)] // https://github.com/rust-lang/rust/issues/113863
     /// The type for `Self::OuptutAmountsType`, which is used to allow users to
     /// access the output amount for each of the output resource types, per recipe cycle.
     type OutputAmountsType: std::fmt::Debug;
 
+    #[doc(hidden)] // https://github.com/rust-lang/rust/issues/113863
     /// Amount for each of the output resource types, per recipe cycle.
     const OUTPUT_AMOUNTS: Self::OutputAmountsType;
 
