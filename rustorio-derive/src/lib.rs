@@ -38,7 +38,7 @@ fn derive_recipe_process_attr(
     amount_const_name: &str,
     new_fn_name: &str,
     iter_fn_name: &str,
-) -> TokenStream {
+) -> (TokenStream, TokenStream) {
     let Ok(inner) = attr.parse_args::<RecipeItemsAttr>() else {
         panic!("Invalid \"{attr_name}\" args");
     };
@@ -79,22 +79,25 @@ fn derive_recipe_process_attr(
             )}
         });
 
-    quote! {
-        type #item_type_ident = (#(#recipe_items,)*);
+    (
+        quote! {
+            type #item_type_ident = (#(#recipe_items,)*);
 
-        type #amount_type_ident = (#(#amount_types,)*);
-        const #amount_const_ident: Self::#amount_type_ident = (#(#amounts,)*);
+            type #amount_type_ident = (#(#amount_types,)*);
+            const #amount_const_ident: Self::#amount_type_ident = (#(#amounts,)*);
+        },
+        quote! {
+            fn #new_fn_ident() -> Self::#item_type_ident {
+                (#(#new_values,)*)
+            }
 
-        fn #new_fn_ident() -> Self::#item_type_ident {
-            (#(#new_values,)*)
-        }
-
-        fn #iter_fn_ident(
-            items: &mut Self::#item_type_ident
-        ) -> impl Iterator<Item = (u32, &mut u32)> {
-            [#(#iter_values,)*].into_iter()
-        }
-    }
+            fn #iter_fn_ident(
+                items: &mut Self::#item_type_ident
+            ) -> impl Iterator<Item = (u32, &mut u32)> {
+                [#(#iter_values,)*].into_iter()
+            }
+        },
+    )
 }
 
 fn derive_recipe_inner(input: DeriveInput) -> TokenStream {
@@ -129,8 +132,8 @@ fn derive_recipe_inner(input: DeriveInput) -> TokenStream {
             );
         }
     }
-    let inputs = inputs.expect("Missing \"recipe_inputs\" attribute");
-    let outputs = outputs.expect("Missing \"recipe_outputs\" attribute");
+    let (inputs, inputs_ex) = inputs.expect("Missing \"recipe_inputs\" attribute");
+    let (outputs, outputs_ex) = outputs.expect("Missing \"recipe_outputs\" attribute");
     let ticks = ticks.expect("Missing \"recipe_ticks\" attribute");
 
     let name = input.ident;
@@ -140,6 +143,11 @@ fn derive_recipe_inner(input: DeriveInput) -> TokenStream {
 
             #inputs
             #outputs
+        }
+
+        impl ::rustorio_engine::recipe::RecipeEx for #name {
+            #inputs_ex
+            #outputs_ex
         }
     }
 }

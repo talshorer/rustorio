@@ -103,7 +103,10 @@ pub trait Recipe {
     #[doc(hidden)] // https://github.com/rust-lang/rust/issues/113863
     /// Amount for each of the output resource types, per recipe cycle.
     const OUTPUT_AMOUNTS: Self::OutputAmountsType;
+}
 
+#[doc(hidden)]
+pub trait RecipeEx: Recipe {
     /// Factory function to create a new `Self::Inputs` with zero resources.
     fn new_inputs() -> Self::Inputs;
 

@@ -8,7 +8,10 @@
 //! pub struct Assembler<R: AssemblerRecipe>(Machine<R>);
 //! ```
 
-use crate::{recipe::Recipe, tick::Tick};
+use crate::{
+    recipe::{Recipe, RecipeEx},
+    tick::Tick,
+};
 
 /// Basic machine that can process recipes.
 #[derive(Debug)]
@@ -19,7 +22,7 @@ pub struct Machine<R: Recipe> {
     crafting_time: u64,
 }
 
-impl<R: Recipe> Machine<R> {
+impl<R: RecipeEx> Machine<R> {
     fn new_inner(tick: u64) -> Self {
         Self {
             inputs: R::new_inputs(),
@@ -56,7 +59,7 @@ impl<R: Recipe> Machine<R> {
 
     /// Changes the [`Recipe`](crate::recipe) of the machine.
     /// Returns the original machine if the machine has any inputs or outputs.
-    pub fn change_recipe<R2: Recipe>(mut self, recipe: R2) -> Result<Machine<R2>, Self> {
+    pub fn change_recipe<R2: RecipeEx>(mut self, recipe: R2) -> Result<Machine<R2>, Self> {
         fn nonempty((_, current): (u32, &mut u32)) -> bool {
             *current > 0
         }
@@ -89,7 +92,10 @@ impl<R: Recipe> Machine<R> {
         }
         self.crafting_time -= u64::from(count) * R::TIME;
 
-        if self.iter_inputs().any(|(needed, current)| *current < needed) {
+        if self
+            .iter_inputs()
+            .any(|(needed, current)| *current < needed)
+        {
             self.crafting_time = 0;
         }
 

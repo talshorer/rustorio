@@ -3,12 +3,16 @@
 
 use std::fmt::Debug;
 
-use rustorio_engine::{Sealed, recipe::Recipe, research::RedScience};
+use rustorio_engine::{
+    Sealed,
+    recipe::{Recipe, RecipeEx},
+    research::RedScience,
+};
 
 use crate::resources::{Copper, CopperOre, Iron, IronOre, Point};
 
 /// Any recipe that implements this trait can be used in an [`Assembler`](crate::buildings::Assembler).
-pub trait AssemblerRecipe: Debug + Sealed + Recipe {}
+pub trait AssemblerRecipe: Debug + Sealed + RecipeEx {}
 
 /// A recipe for crafting red science packs.
 #[derive(Debug, Clone, Copy, Recipe)]
@@ -43,7 +47,7 @@ impl Sealed for PointRecipe {}
 impl AssemblerRecipe for PointRecipe {}
 
 /// Any recipe that implements this trait can be used in a [`Furnace`](crate::buildings::Furnace).
-pub trait FurnaceRecipe: Debug + Sealed + Recipe {}
+pub trait FurnaceRecipe: Debug + Sealed + RecipeEx {}
 
 /// A [`Furnace`](crate::buildings::Furnace) recipe that smelts iron ore into iron. Converts 2 iron ore into 1 iron. Takes 10 ticks.
 #[derive(Debug, Clone, Copy, Recipe)]
