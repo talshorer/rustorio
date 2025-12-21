@@ -1,5 +1,5 @@
 use rustorio::{
-    Bundle, Resource, Tick, buildings::Furnace, gamemodes::Tutorial, recipes::CopperSmelting,
+    Bundle, Tick, buildings::Furnace, gamemodes::Tutorial, recipes::CopperSmelting,
     resources::Copper,
 };
 
@@ -19,7 +19,7 @@ fn user_main(mut tick: Tick, starting_resources: StartingResources) -> (Tick, Bu
     let copper_ore = rustorio::mine_copper::<8>(&mut tick);
 
     furnace.input(&tick).add(copper_ore);
-    tick.advance_until(|tick| furnace.output(tick).amount() > 0, 100);
+    tick.advance_until(|tick| furnace.output(tick).amount() >= 4, 100);
 
     let win_bundle = furnace.output(&tick).bundle().unwrap();
     (tick, win_bundle)
