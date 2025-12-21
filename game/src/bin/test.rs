@@ -29,11 +29,10 @@ fn user_main(
 
     let iron_ore = rustorio::mine_iron::<500>(&mut tick);
 
-
     furnace.inputs(&tick).0.add(iron_ore.to_resource());
-  
+
     let mut copper_ore = rustorio::Resource::new_empty();
-    while furnace.inputs(&tick).0.cur() > 0 {
+    while furnace.inputs(&tick).0.amount() > 0 {
         copper_ore += rustorio::mine_copper::<1>(&mut tick);
     }
 
@@ -44,8 +43,11 @@ fn user_main(
 
     let mut furnace = furnace.change_recipe(CopperSmelting).unwrap();
 
-    furnace.inputs(&tick).0.add(copper_ore.bundle::<200>().unwrap());
-    tick.advance_until(|tick| furnace.inputs(tick).0.cur() == 0, u64::MAX);
+    furnace
+        .inputs(&tick)
+        .0
+        .add(copper_ore.bundle::<200>().unwrap());
+    tick.advance_until(|tick| furnace.inputs(tick).0.amount() == 0, u64::MAX);
 
     let mut copper = furnace.outputs(&tick).0.empty();
     println!("Copper ingots produced: {}", copper.amount());
@@ -61,8 +63,8 @@ fn user_main(
 
     assembler.inputs(&tick).0.add(iron.bundle::<5>().unwrap());
     assembler.inputs(&tick).1.add(copper.bundle::<5>().unwrap());
-    tick.advance_until(|tick| assembler.outputs(&tick).0.cur() >= 5, 100);
-    let red_science = assembler.outputs(&tick).0.take_bundle().unwrap();
+    tick.advance_until(|tick| assembler.outputs(&tick).0.amount() >= 5, 100);
+    let red_science = assembler.outputs(&tick).0.bundle().unwrap();
 
     let points_recipe = points_technology.research(red_science);
     println!("Points researched!");
@@ -74,8 +76,8 @@ fn user_main(
 
     assembler.inputs(&tick).0.add(iron);
     assembler.inputs(&tick).1.add(copper);
-    tick.advance_until(|tick| assembler.outputs(&tick).0.cur() >= 10, 10000);
+    tick.advance_until(|tick| assembler.outputs(&tick).0.amount() >= 10, 10000);
 
-    let points = assembler.outputs(&tick).0.take_bundle().unwrap();
+    let points = assembler.outputs(&tick).0.bundle().unwrap();
     (tick, points)
 }

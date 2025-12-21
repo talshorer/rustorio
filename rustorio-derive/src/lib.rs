@@ -24,7 +24,9 @@ struct RecipeItemsAttr(Punctuated<RecipeItemAttrArgs, Token![,]>);
 
 impl Parse for RecipeItemsAttr {
     fn parse(input: ParseStream) -> syn::Result<Self> {
-        Ok(Self(input.parse_terminated(RecipeItemAttrArgs::parse, Token![,])?))
+        Ok(Self(
+            input.parse_terminated(RecipeItemAttrArgs::parse, Token![,])?,
+        ))
     }
 }
 
@@ -60,7 +62,7 @@ fn derive_recipe_process_attr(
     let item_type_ident = Ident::new(item_type_name, Span::call_site());
     let recipe_items = per_type
         .iter()
-        .map(|(amount, ty)| quote! {::rustorio_engine::recipe::RecipeItem<{#amount as usize}, #ty>});
+        .map(|(amount, ty)| quote! {::rustorio_engine::recipe::RecipeItem<#amount, #ty>});
 
     let new_fn_ident = Ident::new(new_fn_name, Span::call_site());
     let new_values = per_type
@@ -121,7 +123,10 @@ fn derive_recipe_inner(input: DeriveInput) -> TokenStream {
                 "iter_outputs",
             ));
         } else if attr.path().is_ident("recipe_ticks") {
-            ticks = Some(attr.parse_args::<LitInt>().expect("Invalid \"recipe_ticks\" value"));
+            ticks = Some(
+                attr.parse_args::<LitInt>()
+                    .expect("Invalid \"recipe_ticks\" value"),
+            );
         }
     }
     let inputs = inputs.expect("Missing \"recipe_inputs\" attribute");

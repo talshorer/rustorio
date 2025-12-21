@@ -1,81 +1,48 @@
 //! Recipes define all item transformations in the game via input items, output items, and time.
 
-use std::marker::PhantomData;
+use std::ops::{Deref, DerefMut};
 
 pub use rustorio_derive::Recipe;
 
-use crate::{
-    ResourceType,
-    resources::{Bundle, InsufficientResourceError, Resource},
-};
+use crate::{ResourceType, resources::Resource};
 
 /// One recipe item and its current amount inside a machine's input/output buffer.
 #[derive(Debug)]
-pub struct RecipeItem<const AMOUNT: usize, R: ResourceType> {
-    _phantom: PhantomData<[R; AMOUNT]>,
-    /// Current amount of this item in a machine's buffer.
-    amount: u32,
-}
+pub struct RecipeItem<const AMOUNT: u32, Content: ResourceType>(Resource<Content>);
 
-impl<const AMOUNT: usize, R: ResourceType> Default for RecipeItem<AMOUNT, R> {
+impl<const AMOUNT: u32, Content: ResourceType> Default for RecipeItem<AMOUNT, Content> {
     fn default() -> Self {
-        Self {
-            _phantom: Default::default(),
-            amount: Default::default(),
-        }
+        Self(Resource::new_empty())
     }
 }
 
-impl<const NEEDED_AMOUNT: usize, R: ResourceType> RecipeItem<NEEDED_AMOUNT, R> {
+impl<const AMOUNT: u32, Content: ResourceType> Deref for RecipeItem<AMOUNT, Content> {
+    type Target = Resource<Content>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+impl<const AMOUNT: u32, Content: ResourceType> DerefMut for RecipeItem<AMOUNT, Content> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
+
+impl<const AMOUNT: u32, Content: ResourceType> RecipeItem<AMOUNT, Content> {
     /// Needed amount of the resource for one cycle of its recipe.
     pub const fn needed_amount(&self) -> u32 {
-        NEEDED_AMOUNT as u32
-    }
-
-    /// How much of the resource is currently in the buffer.
-    pub fn cur(&self) -> u32 {
-        self.amount
-    }
-
-    /// Consumes a [`Resource`] and puts the contained resources into the buffer.
-    pub fn add(&mut self, item: impl Into<Resource<R>>) {
-        self.amount += item.into().amount()
-    }
-
-    /// Takes a specified amount of resource from this buffer and puts it into a [`Resource`].
-    pub fn take(&mut self, amount: u32) -> Result<Resource<R>, InsufficientResourceError<R>> {
-        if self.amount >= amount {
-            self.amount -= amount;
-            Ok(Resource::new(amount))
-        } else {
-            Err(InsufficientResourceError::new(amount, self.amount))
-        }
-    }
-
-    /// Takes a specified amount of resource from this buffer and puts it into a [`Bundle`].
-    pub fn take_bundle<const BUNDLE_AMOUNT: u32>(
-        &mut self,
-    ) -> Result<Bundle<R, BUNDLE_AMOUNT>, InsufficientResourceError<R>> {
-        if self.amount >= BUNDLE_AMOUNT {
-            self.amount -= BUNDLE_AMOUNT;
-            Ok(Bundle::new())
-        } else {
-            Err(InsufficientResourceError::new(BUNDLE_AMOUNT, self.amount))
-        }
-    }
-
-    /// Takes all resource currently in the buffer and puts it into a [`Resource`].
-    pub fn empty(&mut self) -> Resource<R> {
-        Resource::new(std::mem::take(&mut self.amount))
+        AMOUNT
     }
 }
 
 /// Get a mutable reference to the inner amount.
 /// This is not a function of `RecipeItem` to allow mods to choose to not export it to user code.
-pub fn recipe_item_amount<const AMOUNT: usize, Resource: ResourceType>(
-    item: &mut RecipeItem<AMOUNT, Resource>,
+pub fn recipe_item_amount<const AMOUNT: u32, Content: ResourceType>(
+    item: &mut RecipeItem<AMOUNT, Content>,
 ) -> &mut u32 {
-    &mut item.amount
+    &mut item.0.amount
 }
 
 /// Basic recipe trait. A building's specific recipe trait can then be defined like
