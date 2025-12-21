@@ -1,5 +1,5 @@
 doc *FLAGS:
-    cargo doc -p rustorio -p rustorio-engine --no-deps {{ FLAGS }}
+    cargo doc -p rustorio -p rustorio-engine -p rustorio-derive --no-deps {{ FLAGS }}
 
 push BRANCH:
     jj bookmark move {{BRANCH}} --to=@-

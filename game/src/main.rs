@@ -18,9 +18,9 @@ fn user_main(mut tick: Tick, starting_resources: StartingResources) -> (Tick, Bu
 
     let copper_ore = rustorio::mine_copper::<8>(&mut tick);
 
-    furnace.input(&tick).add(copper_ore);
-    tick.advance_until(|tick| furnace.output(tick).amount() >= 4, 100);
+    furnace.inputs(&tick).0.add(copper_ore);
+    tick.advance_until(|tick| furnace.outputs(tick).0.amount() >= 4, 100);
 
-    let win_bundle = furnace.output(&tick).bundle().unwrap();
+    let win_bundle = furnace.outputs(&tick).0.bundle().unwrap();
     (tick, win_bundle)
 }

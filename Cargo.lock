@@ -267,8 +267,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "rustorio-derive"
+version = "0.0.4"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
+]
+
+[[package]]
 name = "rustorio-engine"
 version = "0.0.5"
+dependencies = [
+ "rustorio-derive",
+]
 
 [[package]]
 name = "shell-words"

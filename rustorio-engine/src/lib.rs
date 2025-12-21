@@ -8,6 +8,8 @@
 //! For more information, see the [repo](https://github.com/albertsgarde/rustorio)
 
 pub mod gamemodes;
+pub mod machine;
+pub mod recipe;
 pub mod research;
 mod resources;
 mod tick;
@@ -52,6 +54,7 @@ pub mod mod_reexports {
     pub use crate::{
         gamemodes::GameMode,
         play,
+        recipe::Recipe,
         research::{RedScience, Technology},
         resources::{Bundle, InsufficientResourceError, Resource},
         tick::Tick,
