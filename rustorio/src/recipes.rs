@@ -15,7 +15,7 @@ use crate::resources::{Copper, CopperOre, Iron, IronOre, Point};
 pub trait AssemblerRecipe: Debug + Sealed + RecipeEx {}
 
 /// A recipe for crafting red science packs.
-#[derive(Debug, Clone, Copy, Recipe)]
+#[derive(Debug, Clone, Copy, Recipe, RecipeEx)]
 #[recipe_inputs(
     (1, Iron),
     (1, Copper),
@@ -31,7 +31,7 @@ impl AssemblerRecipe for RedScienceRecipe {}
 /// The recipe you need to win! An [`Assembler`](crate::buildings::Assembler) recipe that creates points. Converts 4 iron and 4 copper into 1 point resource. Takes 20 ticks.
 ///
 /// You can unlock this recipe by researching [`PointsTechnology`](crate::research::PointsTechnology).
-#[derive(Debug, Clone, Copy, Recipe)]
+#[derive(Debug, Clone, Copy, Recipe, RecipeEx)]
 #[recipe_inputs(
     (4, Iron),
     (4, Copper),
@@ -50,7 +50,7 @@ impl AssemblerRecipe for PointRecipe {}
 pub trait FurnaceRecipe: Debug + Sealed + RecipeEx {}
 
 /// A [`Furnace`](crate::buildings::Furnace) recipe that smelts iron ore into iron. Converts 2 iron ore into 1 iron. Takes 10 ticks.
-#[derive(Debug, Clone, Copy, Recipe)]
+#[derive(Debug, Clone, Copy, Recipe, RecipeEx)]
 #[recipe_inputs(
     (2, IronOre),
 )]
@@ -64,7 +64,7 @@ impl Sealed for IronSmelting {}
 impl FurnaceRecipe for IronSmelting {}
 
 /// A [`Furnace`](crate::buildings::Furnace) recipe that smelts copper ore into copper. Converts 2 copper ore into 1 copper. Takes 10 ticks.
-#[derive(Debug, Clone, Copy, Recipe)]
+#[derive(Debug, Clone, Copy, Recipe, RecipeEx)]
 #[recipe_inputs(
     (2, CopperOre),
 )]
