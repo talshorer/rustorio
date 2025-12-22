@@ -22,7 +22,8 @@ macro_rules! game_bin_file {
     };
 }
 
-const RUST_TOOLCHAIN: &str = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/rust-toolchain"));
+const RUST_TOOLCHAIN: &str =
+    include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/rust-toolchain.toml"));
 
 #[derive(Error, Debug)]
 pub enum RunCommandError {
