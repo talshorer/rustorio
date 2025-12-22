@@ -7,6 +7,7 @@ type GameMode = Tutorial;
 
 type StartingResources = <GameMode as rustorio::GameMode>::StartingResources;
 
+#[test]
 fn main() {
     rustorio::play::<GameMode>(user_main);
 }

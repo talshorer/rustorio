@@ -10,6 +10,7 @@ type GameMode = Standard;
 
 type StartingResources = <GameMode as rustorio::GameMode>::StartingResources;
 
+#[test]
 pub fn main() {
     rustorio::play::<GameMode>(user_main);
 }
@@ -63,7 +64,7 @@ fn user_main(
 
     assembler.inputs(&tick).0.add(iron.bundle::<5>().unwrap());
     assembler.inputs(&tick).1.add(copper.bundle::<5>().unwrap());
-    tick.advance_until(|tick| assembler.outputs(&tick).0.amount() >= 5, 100);
+    tick.advance_until(|tick| assembler.outputs(tick).0.amount() >= 5, 100);
     let red_science = assembler.outputs(&tick).0.bundle().unwrap();
 
     let points_recipe = points_technology.research(red_science);
@@ -76,7 +77,7 @@ fn user_main(
 
     assembler.inputs(&tick).0.add(iron);
     assembler.inputs(&tick).1.add(copper);
-    tick.advance_until(|tick| assembler.outputs(&tick).0.amount() >= 10, 10000);
+    tick.advance_until(|tick| assembler.outputs(tick).0.amount() >= 10, 10000);
 
     let points = assembler.outputs(&tick).0.bundle().unwrap();
     (tick, points)

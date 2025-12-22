@@ -22,7 +22,8 @@ macro_rules! game_bin_file {
     };
 }
 
-const RUST_TOOLCHAIN: &str = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/rust-toolchain"));
+const RUST_TOOLCHAIN: &str =
+    include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/rust-toolchain.toml"));
 
 #[derive(Error, Debug)]
 pub enum RunCommandError {
@@ -170,11 +171,13 @@ impl GameMode {
         }
     }
 
-    pub fn start_file(&self) -> &str {
+    pub fn start_file(&self) -> String {
         match self {
             GameMode::Tutorial => include_str!(game_bin_file!("tutorial")),
             GameMode::Standard => include_str!(game_bin_file!("standard")),
         }
+        .replace("\n#[allow(unused_variables)]", "")
+        .replace("\n#[allow(unused_mut)]", "")
     }
 }
 
