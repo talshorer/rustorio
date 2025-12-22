@@ -10,6 +10,8 @@ fn main() {
     rustorio::play::<GameMode>(user_main);
 }
 
+#[allow(unused_variables)]
+#[allow(unused_mut)]
 fn user_main(mut tick: Tick, starting_resources: StartingResources) -> (Tick, Bundle<Copper, 4>) {
     let StartingResources { iron, guide } = starting_resources;
 
