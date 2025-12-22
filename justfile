@@ -1,3 +1,7 @@
+# If you don't have nextest installed, you can get it via `cargo install cargo-nextest`
+test:
+    cargo nextest r
+
 doc *FLAGS:
     cargo doc -p rustorio -p rustorio-engine -p rustorio-derive --no-deps {{ FLAGS }}
 

@@ -10,6 +10,7 @@ type GameMode = Standard;
 
 type StartingResources = <GameMode as rustorio::GameMode>::StartingResources;
 
+#[test]
 pub fn main() {
     rustorio::play::<GameMode>(user_main);
 }

@@ -1,9 +1,3 @@
 [workspace]
-members = [
-    "game",
-    "rustorio-derive",
-    "rustorio-engine",
-    "rustorio",
-]
-default-members = ["rustorio-engine", "rustorio"]
+members = ["rustorio-derive", "rustorio-engine", "rustorio"]
 resolver = "3"
