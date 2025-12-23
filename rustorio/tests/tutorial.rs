@@ -1,18 +1,16 @@
-use rustorio::{
-    Bundle, Tick, buildings::Furnace, gamemodes::Tutorial, recipes::CopperSmelting,
-    resources::Copper,
-};
+use rustorio::{Tick, buildings::Furnace, gamemodes::Tutorial, recipes::CopperSmelting};
 
 type GameMode = Tutorial;
 
 type StartingResources = <GameMode as rustorio::GameMode>::StartingResources;
+type VictoryResources = <GameMode as rustorio::GameMode>::VictoryResources;
 
 #[test]
-fn main() {
+fn tutorial() {
     rustorio::play::<GameMode>(user_main);
 }
 
-fn user_main(mut tick: Tick, starting_resources: StartingResources) -> (Tick, Bundle<Copper, 4>) {
+fn user_main(mut tick: Tick, starting_resources: StartingResources) -> (Tick, VictoryResources) {
     let StartingResources { iron, guide: _ } = starting_resources;
 
     let mut furnace = Furnace::build(&tick, CopperSmelting, iron);
