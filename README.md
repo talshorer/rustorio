@@ -34,6 +34,7 @@ You can use this to create a [`Furnace`](https://docs.rs/rustorio/latest/rustori
 Because none of these types implement `Copy` or `Clone` and because they all have hidden fields, the only way (I hope) to create them is through the use of other resources, or in the case of ore, [time](https://docs.rs/rustorio/latest/rustorio/struct.Tick.html).
 
 The game is pretty simple and easy right now, but I have many ideas for future features. I really enjoy figuring our how to wrangle the Rust language into doing what I want in this way, and I really hope some of you enjoy this kind of this as well. Please do give it a try and tell me what you think!
+
 ## How to play
 1. Install [Rust](https://www.rust-lang.org/tools/install). Specifically it's
    important to have the entire rustup toolchain and cargo, all of which you get
@@ -49,9 +50,11 @@ The game is pretty simple and easy right now, but I have many ideas for future f
 6. Run with `rustorio play <save name>` (e.g. `rustorio play tutorial`). This will compile and run your save. If
    it compiles and completes without panicking, you win! It'll then tell you how
    many ticks it took you to win.
+
 ### After the tutorial
 To play other game modes, run `rustorio new-game` and specify a game mode.
 Use `rustorio new-game --help` to see all available game modes.
+
 ## Rules
 The rules are mostly enforced by the compiler. The only two (current) exceptions are:
 1. Do not remove `#![forbid(unsafe_code)]` at the top of the `main.rs` file.
@@ -61,6 +64,7 @@ The rules are mostly enforced by the compiler. The only two (current) exceptions
    please file an issue!
    Part of my interest in this project is seeing how close we can get to rule out all possible
    cheating vectors using only the Rust compiler. So I'd love to hear about any ways to cheat.
+
 ## Help
 Documentation for the Rustorio library can be found
 [here](https://docs.rs/rustorio/latest/rustorio/). A good place to start
