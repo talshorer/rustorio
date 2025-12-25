@@ -15,6 +15,9 @@ documentation = "https://docs.rs/rustorio"
 default = ["cli"]
 cli = ["dep:clap", "dep:anyhow", "dep:dialoguer", "dep:thiserror"]
 
+[lints]
+workspace = true
+
 [dependencies]
 rustorio-engine = { path = "../rustorio-engine", version = "0.0.5" }
 

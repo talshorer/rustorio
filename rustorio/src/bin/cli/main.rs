@@ -164,7 +164,7 @@ pub enum GameMode {
 }
 
 impl GameMode {
-    pub fn as_str(&self) -> &str {
+    pub const fn as_str(&self) -> &str {
         match self {
             GameMode::Tutorial => "tutorial",
             GameMode::Standard => "standard",
