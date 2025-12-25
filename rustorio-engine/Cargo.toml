@@ -10,5 +10,8 @@ you can write the program so it compiles and doesn't panic, you win!"""
 readme = "../README.md"
 documentation = "https://docs.rs/rustorio-engine"
 
+[lints]
+workspace = true
+
 [dependencies]
 rustorio-derive = { path = "../rustorio-derive", version = "0.0.5" }

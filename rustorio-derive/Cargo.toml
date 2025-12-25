@@ -10,6 +10,9 @@ you can write the program so it compiles and doesn't panic, you win!"""
 readme = "../README.md"
 documentation = "https://docs.rs/rustorio-derive"
 
+[lints]
+workspace = true
+
 [lib]
 proc-macro = true
 
