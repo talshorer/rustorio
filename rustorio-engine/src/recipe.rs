@@ -4,7 +4,7 @@ use std::ops::{Deref, DerefMut};
 
 pub use rustorio_derive::{Recipe, RecipeEx, recipe_doc};
 
-use crate::{ResourceType, resources::Resource};
+use crate::{ResourceType, Sealed, resources::Resource, tick::Tick};
 
 /// One recipe item and its current amount inside a machine's input/output buffer.
 #[derive(Debug)]
@@ -103,11 +103,21 @@ pub trait Recipe {
 
 #[doc(hidden)]
 pub trait RecipeEx: Recipe {
+    /// A type guaranteed to contain exactly the input resources for one recipe cycle.
+    /// Used in handcrafting.
+    type InputBundle: std::fmt::Debug;
+    /// A type guaranteed to contain exactly the output resources for one recipe cycle.
+    /// Used in handcrafting.
+    type OutputBundle: std::fmt::Debug;
+
     /// Factory function to create a new `Self::Inputs` with zero resources.
     fn new_inputs() -> Self::Inputs;
 
     /// Factory function to create a new `Self::Outputs` with zero resources.
     fn new_outputs() -> Self::Outputs;
+
+    /// Factory function to create a new `Self::InputBundle`.
+    fn new_output_bundle() -> Self::OutputBundle;
 
     /// Iterator helper over `Self::Inputs`.
     fn iter_inputs(items: &mut Self::Inputs)
@@ -117,4 +127,15 @@ pub trait RecipeEx: Recipe {
     fn iter_outputs(
         items: &mut Self::Outputs,
     ) -> impl Iterator<Item = (&'static str, u32, &mut u32)>;
+}
+
+/// A recipe that can be hand-crafted by the player.
+pub trait HandRecipe: std::fmt::Debug + Sealed + RecipeEx {
+    /// Crafts the recipe by consuming the input bundle and producing the output bundle.
+    /// Advances the provided `Tick` by the recipe's time.
+    fn craft(tick: &mut Tick, inputs: Self::InputBundle) -> Self::OutputBundle {
+        let _ = inputs;
+        tick.advance_by(Self::TIME);
+        Self::new_output_bundle()
+    }
 }

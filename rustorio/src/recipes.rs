@@ -5,7 +5,7 @@ use std::fmt::Debug;
 
 use rustorio_engine::{
     Sealed,
-    recipe::{Recipe, RecipeEx, recipe_doc},
+    recipe::{HandRecipe, Recipe, RecipeEx, recipe_doc},
 };
 
 use crate::{
@@ -30,6 +30,7 @@ pub trait AssemblerRecipe: Debug + Sealed + RecipeEx {}
 pub struct RedScienceRecipe;
 impl Sealed for RedScienceRecipe {}
 impl AssemblerRecipe for RedScienceRecipe {}
+impl HandRecipe for RedScienceRecipe {}
 
 /// The recipe you need to win! An [`Assembler`](crate::buildings::Assembler) recipe that creates points. Converts 4 iron and 4 copper into 1 point resource. Takes 20 ticks.
 ///

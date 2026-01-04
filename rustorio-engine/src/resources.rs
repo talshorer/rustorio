@@ -220,6 +220,7 @@ impl<Content: ResourceType> Add for Resource<Content> {
     }
 }
 
+#[derive(Debug)]
 /// Contains a fixed (compile-time known) amount of a resource.
 /// A [`Bundle`] can be used to build structures or as input for recipes.
 pub struct Bundle<Content: ResourceType, const AMOUNT: u32> {
