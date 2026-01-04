@@ -138,6 +138,25 @@ impl RecipeItemList {
         }
     }
 
+    fn generate_recipe_new_bundle_method(&self, new_fn_name: &str) -> TokenStream {
+        let RecipeItemList {
+            item_list,
+            item_type_ident: _,
+            amount_const_ident: _,
+        } = self;
+
+        let new_fn_ident = Ident::new(new_fn_name, Span::call_site());
+        let new_values = item_list
+            .iter()
+            .map(|(amount, ty)| quote! {#Crate::resources::bundle::<#ty, #amount>()});
+
+        quote! {
+            fn #new_fn_ident() -> <Self as RecipeEx>::OutputBundle {
+                (#(#new_values,)*)
+            }
+        }
+    }
+
     fn generate_recipe_iter_method(
         &self,
         iter_fn_name: &str,
@@ -168,6 +187,22 @@ impl RecipeItemList {
             ) -> impl Iterator<Item = (&'static str, u32, &mut u32)> {
                 [#(#iter_values,)*].into_iter()
             }
+        }
+    }
+
+    fn generate_bundle_type(&self) -> TokenStream {
+        let RecipeItemList {
+            item_list,
+            item_type_ident: _,
+            amount_const_ident: _,
+        } = self;
+
+        let bundle_items = item_list
+            .iter()
+            .map(|(amount, ty)| quote! {#Crate::resources::Bundle<#ty, #amount>});
+
+        quote! {
+            (#(#bundle_items,)*)
         }
     }
 }
@@ -255,15 +290,20 @@ impl RecipeDetails {
 
     fn recipe_ex_impl(&self) -> TokenStream {
         let implementing_trait_path = quote! {#Crate::recipe::Recipe};
+        let input_bundle_type = self.inputs.generate_bundle_type();
+        let output_bundle_type = self.outputs.generate_bundle_type();
         let new_inputs_method_stream = self
             .inputs
             .generate_recipe_new_method("new_inputs", implementing_trait_path.clone());
-        let iter_inputs_method_stream = self
-            .inputs
-            .generate_recipe_iter_method("iter_inputs", implementing_trait_path.clone());
         let new_outputs_method_stream = self
             .outputs
             .generate_recipe_new_method("new_outputs", implementing_trait_path.clone());
+        let new_output_bundle_method_stream = self
+            .outputs
+            .generate_recipe_new_bundle_method("new_output_bundle");
+        let iter_inputs_method_stream = self
+            .inputs
+            .generate_recipe_iter_method("iter_inputs", implementing_trait_path.clone());
         let iter_outputs_method_stream = self
             .outputs
             .generate_recipe_iter_method("iter_outputs", implementing_trait_path.clone());
@@ -271,9 +311,12 @@ impl RecipeDetails {
         let name = &self.name;
         quote! {
             impl #impl_generics #Crate::recipe::RecipeEx for #name #ty_generics #where_clause {
+                type InputBundle = #input_bundle_type;
+                type OutputBundle = #output_bundle_type;
                 #new_inputs_method_stream
-                #iter_inputs_method_stream
                 #new_outputs_method_stream
+                #new_output_bundle_method_stream
+                #iter_inputs_method_stream
                 #iter_outputs_method_stream
             }
         }
@@ -393,6 +436,8 @@ impl TechnologyDetails {
         let research_point_cost = &self.research_point_cost;
         let point_recipe_time = &self.point_recipe_time;
 
+        let input_bundle_type = self.research_inputs.generate_bundle_type();
+
         let implementing_trait_path = quote! {#Crate::research::TechnologyEx};
 
         let new_inputs_method_stream = self
@@ -408,6 +453,7 @@ impl TechnologyDetails {
                 #inputs_stream
                 const POINT_RECIPE_TIME: u64 = #point_recipe_time;
                 const RESEARCH_POINT_COST: u32 = #research_point_cost;
+                type InputBundle = #input_bundle_type;
 
                 #new_inputs_method_stream
                 #iter_inputs_method_stream

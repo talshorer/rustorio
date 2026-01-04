@@ -32,11 +32,14 @@ pub trait Technology: Sealed + Debug + Sized + TechnologyEx {
 #[doc(hidden)]
 pub trait TechnologyEx {
     /// The inputs needed to create one research point for this technology.
-    /// Typically a tuple of multiple `RecipeTypes`.
+    /// Typically a tuple of multiple `RecipeItem`s.
     type Inputs: Debug;
     /// The type for `Self::InputAmountsType`, which is used to allow users to
     /// access the input amount for each of the input resource types, per recipe cycle.
     type InputAmountsType: Debug;
+    /// A type guaranteed to contain exactly the input resources for one research point.
+    /// Used in hand crafting.
+    type InputBundle: Debug;
     /// Amount for each of the input resource types, per recipe cycle.
     const INPUT_AMOUNTS: Self::InputAmountsType;
     /// The amount of ticks it takes to create one research point for this technology.
@@ -87,12 +90,19 @@ where
 }
 
 impl<T: Technology> RecipeEx for TechRecipe<T> {
+    type InputBundle = T::InputBundle;
+    type OutputBundle = Bundle<ResearchPoint<T>, 1>;
+
     fn new_inputs() -> Self::Inputs {
         T::new_inputs()
     }
 
     fn new_outputs() -> Self::Outputs {
         (RecipeItem::default(),)
+    }
+
+    fn new_output_bundle() -> Self::OutputBundle {
+        Bundle::<ResearchPoint<T>, 1>::new()
     }
 
     fn iter_inputs(

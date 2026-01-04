@@ -1,11 +1,12 @@
 use rustorio::{
-    Technology, Tick,
+    Resource, Technology, Tick,
     buildings::{Assembler, Furnace},
     gamemodes::Standard,
     recipes::{CopperSmelting, IronSmelting, RedScienceRecipe},
     research::Lab,
     territory::Miner,
 };
+use rustorio_engine::recipe::HandRecipe;
 
 type GameMode = Standard;
 
@@ -83,22 +84,14 @@ fn user_main(mut tick: Tick, starting_resources: StartingResources) -> (Tick, Vi
     let mut copper = copper_furnace.outputs(&tick).0.empty();
     println!("Copper ingots produced: {}", copper.amount());
 
-    let mut assembler = Assembler::build(
-        &tick,
-        RedScienceRecipe,
-        iron.bundle().unwrap(),
-        copper.bundle().unwrap(),
-    );
-    println!("Iron left: {}", iron.amount());
-    println!("Copper left: {}", copper.amount());
-
-    assembler.inputs(&tick).0.add(iron.bundle::<10>().unwrap());
-    assembler
-        .inputs(&tick)
-        .1
-        .add(copper.bundle::<10>().unwrap());
-    tick.advance_until(|tick| assembler.outputs(tick).0.amount() >= 10, 100);
-    let red_science = assembler.outputs(&tick).0.empty();
+    let mut red_science_packs = Resource::new_empty();
+    for _ in 0..10 {
+        red_science_packs += RedScienceRecipe::craft(
+            &mut tick,
+            (iron.bundle::<1>().unwrap(), copper.bundle::<1>().unwrap()),
+        )
+        .0;
+    }
 
     let mut lab = Lab::build(
         &tick,
@@ -107,7 +100,9 @@ fn user_main(mut tick: Tick, starting_resources: StartingResources) -> (Tick, Vi
         copper.bundle().unwrap(),
     );
 
-    lab.inputs(&tick).0.add(red_science);
+    lab.inputs(&tick)
+        .0
+        .add(red_science_packs.bundle::<10>().unwrap());
     tick.advance_until(|tick| lab.inputs(tick).0.amount() == 0, 1000);
 
     let tech_points = lab.outputs(&tick).0.bundle().unwrap();
@@ -118,7 +113,15 @@ fn user_main(mut tick: Tick, starting_resources: StartingResources) -> (Tick, Vi
     println!("Iron left: {}", iron.amount());
     println!("Copper left: {}", copper.amount());
 
-    let mut assembler = assembler.change_recipe(points_recipe).unwrap();
+    let mut assembler = Assembler::build(
+        &tick,
+        points_recipe,
+        iron.bundle().unwrap(),
+        copper.bundle().unwrap(),
+    );
+
+    println!("Iron left: {}", iron.amount());
+    println!("Copper left: {}", copper.amount());
 
     assembler.inputs(&tick).0.add(iron);
     assembler.inputs(&tick).1.add(copper);
