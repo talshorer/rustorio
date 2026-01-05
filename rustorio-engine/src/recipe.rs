@@ -1,49 +1,8 @@
 //! Recipes define all item transformations in the game via input items, output items, and time.
 
-use std::ops::{Deref, DerefMut};
-
 pub use rustorio_derive::{Recipe, RecipeEx, recipe_doc};
 
-use crate::{ResourceType, Sealed, resources::Resource, tick::Tick};
-
-/// One recipe item and its current amount inside a machine's input/output buffer.
-#[derive(Debug)]
-pub struct RecipeItem<const AMOUNT: u32, Content: ResourceType>(Resource<Content>);
-
-impl<const AMOUNT: u32, Content: ResourceType> Default for RecipeItem<AMOUNT, Content> {
-    fn default() -> Self {
-        Self(Resource::new_empty())
-    }
-}
-
-impl<const AMOUNT: u32, Content: ResourceType> Deref for RecipeItem<AMOUNT, Content> {
-    type Target = Resource<Content>;
-
-    fn deref(&self) -> &Self::Target {
-        &self.0
-    }
-}
-
-impl<const AMOUNT: u32, Content: ResourceType> DerefMut for RecipeItem<AMOUNT, Content> {
-    fn deref_mut(&mut self) -> &mut Self::Target {
-        &mut self.0
-    }
-}
-
-impl<const AMOUNT: u32, Content: ResourceType> RecipeItem<AMOUNT, Content> {
-    /// Needed amount of the resource for one cycle of its recipe.
-    pub const fn needed_amount(&self) -> u32 {
-        AMOUNT
-    }
-}
-
-/// Get a mutable reference to the inner amount.
-/// This is not a function of `RecipeItem` to allow mods to choose to not export it to user code.
-pub fn recipe_item_amount<const AMOUNT: u32, Content: ResourceType>(
-    item: &mut RecipeItem<AMOUNT, Content>,
-) -> &mut u32 {
-    &mut item.0.amount
-}
+use crate::{Sealed, tick::Tick};
 
 /// Basic recipe trait. A building's specific recipe trait can then be defined like
 /// ```rust

@@ -9,8 +9,8 @@ pub use rustorio_derive::{TechnologyEx, technology_doc};
 
 use crate::{
     ResourceType, Sealed,
-    recipe::{Recipe, RecipeEx, RecipeItem},
-    resources::Bundle,
+    recipe::{Recipe, RecipeEx},
+    resources::{Bundle, Resource},
 };
 
 /// A technology can be unlocked out by calling the `research` method with the required science packs.
@@ -82,7 +82,7 @@ where
     type Inputs = T::Inputs;
     type InputAmountsType = T::InputAmountsType;
     const INPUT_AMOUNTS: Self::InputAmountsType = T::INPUT_AMOUNTS;
-    type Outputs = (RecipeItem<1u32, ResearchPoint<T>>,);
+    type Outputs = (Resource<ResearchPoint<T>>,);
 
     type OutputAmountsType = (u32,);
 
@@ -98,7 +98,7 @@ impl<T: Technology> RecipeEx for TechRecipe<T> {
     }
 
     fn new_outputs() -> Self::Outputs {
-        (RecipeItem::default(),)
+        (Resource::new_empty(),)
     }
 
     fn new_output_bundle() -> Self::OutputBundle {
