@@ -91,6 +91,11 @@ where
         self.0.inputs(tick)
     }
 
+    /// Amount of each input resource needed for one recipe cycle
+    pub const fn input_amounts(&self) -> <T as TechnologyEx>::InputAmountsType {
+        <T as TechnologyEx>::INPUT_AMOUNTS
+    }
+
     /// Get a mutable reference to output buffers.
     pub fn outputs(&mut self, tick: &Tick) -> &mut <TechRecipe<T> as Recipe>::Outputs {
         self.0.outputs(tick)
