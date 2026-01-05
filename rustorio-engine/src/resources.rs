@@ -94,6 +94,14 @@ pub const fn resource<Content: ResourceType>(amount: u32) -> Resource<Content> {
     Resource::new(amount)
 }
 
+/// Returns a mutable reference to the amount of resource contained in the given [`Resource`].
+/// Should not be reexported in mods.
+pub const fn resource_amount_mut<Content: ResourceType>(
+    resource: &mut Resource<Content>,
+) -> &mut u32 {
+    resource.amount_mut()
+}
+
 impl<Content: ResourceType> Resource<Content> {
     /// Creates a new empty [`Resource`].
     pub const fn new_empty() -> Self {
@@ -113,6 +121,10 @@ impl<Content: ResourceType> Resource<Content> {
     /// The current amount of the resource contained in this [`Resource`].
     pub const fn amount(&self) -> u32 {
         self.amount
+    }
+
+    const fn amount_mut(&mut self) -> &mut u32 {
+        &mut self.amount
     }
 
     /// Splits the [`Resource`] into two smaller parts.

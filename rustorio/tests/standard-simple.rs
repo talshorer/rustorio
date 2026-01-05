@@ -28,9 +28,7 @@ fn user_main(mut tick: Tick, starting_resources: StartingResources) -> (Tick, Vi
 
     let mut iron_furnace = Furnace::build(&tick, IronSmelting, iron);
 
-    let iron_ore = iron_territory.hand_mine::<40>(&mut tick);
-
-    iron_furnace.inputs(&tick).0.add(iron_ore.to_resource());
+    iron_furnace.inputs(&tick).0 += iron_territory.hand_mine::<40>(&mut tick);
     tick.advance_until(|tick| iron_furnace.outputs(tick).0.amount() >= 20, 1000);
     iron_territory
         .add_miner(
@@ -47,10 +45,7 @@ fn user_main(mut tick: Tick, starting_resources: StartingResources) -> (Tick, Vi
 
     tick.advance_until(
         |tick| {
-            iron_furnace
-                .inputs(tick)
-                .0
-                .add(iron_territory.resources(tick).empty());
+            iron_furnace.inputs(tick).0 += iron_territory.resources(tick).empty();
             iron_furnace.outputs(tick).0.amount() >= 10
         },
         100000,
@@ -64,14 +59,8 @@ fn user_main(mut tick: Tick, starting_resources: StartingResources) -> (Tick, Vi
 
     tick.advance_until(
         |tick| {
-            iron_furnace
-                .inputs(tick)
-                .0
-                .add(iron_territory.resources(tick).empty());
-            copper_furnace
-                .inputs(tick)
-                .0
-                .add(copper_territory.resources(tick).empty());
+            iron_furnace.inputs(tick).0 += iron_territory.resources(tick).empty();
+            copper_furnace.inputs(tick).0 += copper_territory.resources(tick).empty();
             iron_furnace.outputs(tick).0.amount() >= 500
                 && copper_furnace.outputs(tick).0.amount() >= 500
         },
@@ -100,9 +89,7 @@ fn user_main(mut tick: Tick, starting_resources: StartingResources) -> (Tick, Vi
         copper.bundle().unwrap(),
     );
 
-    lab.inputs(&tick)
-        .0
-        .add(red_science_packs.bundle::<10>().unwrap());
+    lab.inputs(&tick).0 += red_science_packs.bundle::<10>().unwrap();
     tick.advance_until(|tick| lab.inputs(tick).0.amount() == 0, 1000);
 
     let tech_points = lab.outputs(&tick).0.bundle().unwrap();
@@ -123,8 +110,8 @@ fn user_main(mut tick: Tick, starting_resources: StartingResources) -> (Tick, Vi
     println!("Iron left: {}", iron.amount());
     println!("Copper left: {}", copper.amount());
 
-    assembler.inputs(&tick).0.add(iron);
-    assembler.inputs(&tick).1.add(copper);
+    assembler.inputs(&tick).0 += iron;
+    assembler.inputs(&tick).1 += copper;
     tick.advance_until(|tick| assembler.outputs(tick).0.amount() >= 10, 10000);
 
     let points = assembler.outputs(&tick).0.bundle().unwrap();

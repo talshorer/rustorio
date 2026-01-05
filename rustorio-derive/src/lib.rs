@@ -105,7 +105,7 @@ impl RecipeItemList {
 
         let recipe_items = item_list
             .iter()
-            .map(|(amount, ty)| quote! {#Crate::recipe::RecipeItem<#amount, #ty>});
+            .map(|(_, ty)| quote! {#Crate::resources::Resource<#ty>});
 
         quote! {
             type #item_type_ident = (#(#recipe_items,)*);
@@ -129,7 +129,7 @@ impl RecipeItemList {
         let new_fn_ident = Ident::new(new_fn_name, Span::call_site());
         let new_values = item_list
             .iter()
-            .map(|_| quote! {#Crate::recipe::RecipeItem::default()});
+            .map(|_| quote! {#Crate::resources::Resource::new_empty()});
 
         quote! {
             fn #new_fn_ident() -> <Self as #implementing_trait>::#item_type_ident {
@@ -177,7 +177,7 @@ impl RecipeItemList {
                 quote! {(
                     <#resource_type as #Crate::ResourceType>::NAME,
                     <Self as #implementing_trait>::#amount_const_ident.#i,
-                    #Crate::recipe::recipe_item_amount(&mut items.#i)
+                    #Crate::resources::resource_amount_mut(&mut items.#i)
                 )}
             });
 
