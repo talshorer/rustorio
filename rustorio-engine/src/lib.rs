@@ -54,9 +54,9 @@ pub mod mod_reexports {
     pub use crate::{
         gamemodes::GameMode,
         play,
-        recipe::Recipe,
-        research::Technology,
-        resources::{Bundle, InsufficientResourceError, Resource},
+        recipe::{HandRecipe, Recipe},
+        research::{ResearchPoint, Technology},
+        resources::{Bundle, InsufficientResourceError, Resource, ResourceType},
         tick::Tick,
     };
 }

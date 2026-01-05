@@ -8,30 +8,51 @@
 
 use rustorio_engine::{
     Sealed,
-    machine::{Machine, MachineNotEmptyError},
-    mod_reexports::Tick,
-    recipe::{Recipe, RecipeEx},
-    research::{ResearchPoint, TechRecipe, Technology, TechnologyEx, tech_recipe, technology_doc},
+    research::{ResearchPoint, Technology, TechnologyEx, technology_doc},
     resource_type,
 };
 
 use crate::{
     Bundle,
-    recipes::PointRecipe,
-    resources::{Copper, Iron},
+    recipes::{PointRecipe, SteelSmelting},
 };
 
 resource_type!(
-    /// The basic science pack used for researching technologies.
+    /// The basic science pack used for researching technologies in [`Lab`](crate::buildings::Lab)s.
+    ///
+    /// Crafted from [this](crate::recipes::RedScienceRecipe) recipe.
     RedScience
 );
 
-/// Technology that unlocks the ability to produce points.
+/// Allows the further refining of iron into steel.
 #[technology_doc]
 #[derive(Debug, TechnologyEx)]
 #[research_inputs((1, RedScience))]
-#[research_point_cost(10)]
-#[research_ticks(50)]
+#[research_point_cost(20)]
+#[research_ticks(5)]
+#[non_exhaustive]
+pub struct SteelTechnology;
+impl Sealed for SteelTechnology {}
+
+impl Technology for SteelTechnology {
+    const NAME: &'static str = "Steel";
+    type Unlocks = (SteelSmelting, PointsTechnology);
+
+    fn research(
+        self,
+        research_points: Bundle<ResearchPoint<Self>, { Self::REQUIRED_RESEARCH_POINTS }>,
+    ) -> Self::Unlocks {
+        let _ = research_points;
+        (SteelSmelting, PointsTechnology)
+    }
+}
+
+/// Unlocks the ability to produce points.
+#[technology_doc]
+#[derive(Debug, TechnologyEx)]
+#[research_inputs((1, RedScience))]
+#[research_point_cost(50)]
+#[research_ticks(5)]
 #[non_exhaustive]
 pub struct PointsTechnology;
 impl Sealed for PointsTechnology {}
@@ -42,62 +63,9 @@ impl Technology for PointsTechnology {
 
     fn research(
         self,
-        research_points: Bundle<ResearchPoint<Self>, { Self::RESEARCH_POINT_COST }>,
+        research_points: Bundle<ResearchPoint<Self>, { Self::REQUIRED_RESEARCH_POINTS }>,
     ) -> Self::Unlocks {
         let _ = research_points;
         PointRecipe {}
-    }
-}
-
-/// Building that creates research points.
-/// Set it to produce research points for a specific technology either when [`build`](Lab::build)ing it,
-/// or using [`change_technology`](Lab::change_technology).
-pub struct Lab<T: Technology>(Machine<TechRecipe<T>>)
-where
-    TechRecipe<T>: RecipeEx;
-
-impl<T: Technology> Lab<T>
-where
-    TechRecipe<T>: RecipeEx,
-{
-    /// Creates a new `Lab` producing research points for the specified technology.
-    pub fn build(
-        tick: &Tick,
-        technology: &T,
-        iron: Bundle<Iron, 20>,
-        copper: Bundle<Copper, 15>,
-    ) -> Self {
-        let _ = (technology, iron, copper);
-        Self(Machine::new(tick))
-    }
-
-    /// Changes the technology this `Lab` is producing research points for.
-    pub fn change_technology<T2: Technology>(
-        self,
-        technology: &T2,
-    ) -> Result<Lab<T2>, MachineNotEmptyError<Self>>
-    where
-        TechRecipe<T2>: RecipeEx,
-    {
-        let _ = technology;
-        match self.0.change_recipe(tech_recipe()) {
-            Ok(machine) => Ok(Lab(machine)),
-            Err(err) => Err(err.map_machine(Lab)),
-        }
-    }
-
-    /// Get a mutable reference to input buffers.
-    pub fn inputs(&mut self, tick: &Tick) -> &mut <TechRecipe<T> as Recipe>::Inputs {
-        self.0.inputs(tick)
-    }
-
-    /// Amount of each input resource needed for one recipe cycle
-    pub const fn input_amounts(&self) -> <T as TechnologyEx>::InputAmountsType {
-        <T as TechnologyEx>::INPUT_AMOUNTS
-    }
-
-    /// Get a mutable reference to output buffers.
-    pub fn outputs(&mut self, tick: &Tick) -> &mut <TechRecipe<T> as Recipe>::Outputs {
-        self.0.outputs(tick)
     }
 }

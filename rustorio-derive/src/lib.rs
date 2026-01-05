@@ -271,8 +271,16 @@ impl RecipeDetails {
     }
 
     fn recipe_impl(&self) -> TokenStream {
+        let implementing_trait_path = quote! {#Crate::recipe::Recipe};
         let inputs_stream = self.inputs.generate_recipe_direction("InputAmountsType");
         let outputs_stream = self.outputs.generate_recipe_direction("OutputAmountsType");
+
+        let new_inputs_method_stream = self
+            .inputs
+            .generate_recipe_new_method("new_inputs", implementing_trait_path.clone());
+        let new_outputs_method_stream = self
+            .outputs
+            .generate_recipe_new_method("new_outputs", implementing_trait_path.clone());
 
         let (impl_generics, ty_generics, where_clause) = self.generics.split_for_impl();
 
@@ -281,6 +289,9 @@ impl RecipeDetails {
         quote! {
             impl #impl_generics #Crate::recipe::Recipe for #name #ty_generics #where_clause {
                 const TIME: u64 = #ticks;
+
+                #new_inputs_method_stream
+                #new_outputs_method_stream
 
                 #inputs_stream
                 #outputs_stream
@@ -292,12 +303,6 @@ impl RecipeDetails {
         let implementing_trait_path = quote! {#Crate::recipe::Recipe};
         let input_bundle_type = self.inputs.generate_bundle_type();
         let output_bundle_type = self.outputs.generate_bundle_type();
-        let new_inputs_method_stream = self
-            .inputs
-            .generate_recipe_new_method("new_inputs", implementing_trait_path.clone());
-        let new_outputs_method_stream = self
-            .outputs
-            .generate_recipe_new_method("new_outputs", implementing_trait_path.clone());
         let new_output_bundle_method_stream = self
             .outputs
             .generate_recipe_new_bundle_method("new_output_bundle");
@@ -313,8 +318,6 @@ impl RecipeDetails {
             impl #impl_generics #Crate::recipe::RecipeEx for #name #ty_generics #where_clause {
                 type InputBundle = #input_bundle_type;
                 type OutputBundle = #output_bundle_type;
-                #new_inputs_method_stream
-                #new_outputs_method_stream
                 #new_output_bundle_method_stream
                 #iter_inputs_method_stream
                 #iter_outputs_method_stream
@@ -452,7 +455,7 @@ impl TechnologyDetails {
             impl #impl_generics #Crate::research::TechnologyEx for #name #ty_generics #where_clause {
                 #inputs_stream
                 const POINT_RECIPE_TIME: u64 = #point_recipe_time;
-                const RESEARCH_POINT_COST: u32 = #research_point_cost;
+                const REQUIRED_RESEARCH_POINTS_EX: u32 = #research_point_cost;
                 type InputBundle = #input_bundle_type;
 
                 #new_inputs_method_stream
