@@ -57,9 +57,19 @@ impl<R: AssemblerRecipe> Assembler<R> {
         self.0.inputs(tick)
     }
 
+    /// Amount of each input resource needed for one recipe cycle
+    pub const fn input_amounts(&self) -> <R as Recipe>::InputAmountsType {
+        <R as Recipe>::INPUT_AMOUNTS
+    }
+
     /// Update internal state and access output buffers.
     pub fn outputs(&mut self, tick: &Tick) -> &mut <R as Recipe>::Outputs {
         self.0.outputs(tick)
+    }
+
+    /// Amount of each output resource created per recipe cycle
+    pub const fn output_amounts(&self) -> <R as Recipe>::OutputAmountsType {
+        <R as Recipe>::OUTPUT_AMOUNTS
     }
 }
 
@@ -97,8 +107,18 @@ impl<R: FurnaceRecipe> Furnace<R> {
         self.0.inputs(tick)
     }
 
+    /// Amount of each input resource needed for one recipe cycle
+    pub const fn input_amounts(&self) -> <R as Recipe>::InputAmountsType {
+        <R as Recipe>::INPUT_AMOUNTS
+    }
+
     /// Update internal state and access output buffers.
     pub fn outputs(&mut self, tick: &Tick) -> &mut <R as Recipe>::Outputs {
         self.0.outputs(tick)
+    }
+
+    /// Amount of each output resource created per recipe cycle
+    pub const fn output_amounts(&self) -> <R as Recipe>::OutputAmountsType {
+        <R as Recipe>::OUTPUT_AMOUNTS
     }
 }
