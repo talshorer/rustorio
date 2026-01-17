@@ -31,7 +31,7 @@ pull:
     jj new main
 
 publish:
-    cargo publish --allow-dirty
+    cargo publish
 
 install-local:
     cargo install --path rustorio
