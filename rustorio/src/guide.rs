@@ -9,6 +9,7 @@ use crate::{
     buildings::Furnace,
     recipes::FurnaceRecipe,
     resources::{Copper, CopperOre, Iron, IronOre},
+    territory::{Miner, Territory},
 };
 
 /// A topic that the guide can provide hints about.
@@ -20,6 +21,18 @@ impl GuideTopic for Tick {
     fn hint() -> &'static str {
         "The `Tick` object you are given handles the passage of time in the game. You can use methods like `Tick::advance` or `Tick::advance_until` to make time pass, which is necessary for buildings to process resources. Some functions like `mine_iron` and `mine_copper` take a mutable reference to the Tick to let them advance time internally.
 For more information, see https://docs.rs/rustorio/latest/rustorio/struct.Tick.html"
+    }
+}
+
+impl<R: ResourceType> GuideTopic for Territory<R> {
+    fn hint() -> &'static str {
+        "Territories are where you get your basic resources. To begin with you can mine by hand using the `hand_mine` function, but you can add `Miner`s to the territory to automate mining."
+    }
+}
+
+impl GuideTopic for Miner {
+    fn hint() -> &'static str {
+        "Miners can be added to a territory to automate mining. Each miner will mine resources every few ticks, so you don't have to do it by hand. Use `Territory::resources` to get the resources mined by the miners."
     }
 }
 
