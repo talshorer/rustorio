@@ -1,7 +1,7 @@
 //! A recipe is a way of turning resources into other resources.
 //! Some recipes can be performed by hand, but most can be automated using buildings like the [`Assembler`](crate::buildings::Assembler) or the [`Furnace`](crate::buildings::Furnace).
 //! To figure out where the recipe can be performed, look at the trait impls.
-//! For example, the [`CopperWireRecipe`](crate::recipes::CopperWireRecipe) implements the [`AssemblerRecipe`](crate::recipes::AssemblerRecipe) and [`HandRecipe`](crate::recipes::HandRecipe) traits, meaning it can be performed by hand and in an [`Assembler`](crate::buildings::Assembler).
+//! For example, the [`CopperWireRecipe`] implements the [`AssemblerRecipe`] and [`HandRecipe`] traits, meaning it can be performed by hand and in an [`Assembler`](crate::buildings::Assembler).
 //!
 //! The documentation for each recipe struct provides more details about the recipe, including inputs, outputs and time taken.
 
