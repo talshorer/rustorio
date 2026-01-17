@@ -31,12 +31,6 @@ resource_type!(
 );
 
 resource_type!(
-    /// Gears made from [iron](crate::resources::Iron).
-    /// Used for buildings such as the [`Assembler`](crate::buildings::Assembler).
-    IronGear
-);
-
-resource_type!(
     /// Made by smelting [`iron`](crate::resources::Iron) again in a [`Furnace`](crate::buildings::Furnace).
     /// One of the two components for making [`Point`]s.
     Steel
