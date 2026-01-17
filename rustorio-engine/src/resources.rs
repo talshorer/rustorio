@@ -6,6 +6,7 @@
 
 use std::{
     fmt::{Debug, Display},
+    iter::Sum,
     marker::PhantomData,
     ops::{Add, AddAssign},
 };
@@ -15,6 +16,8 @@ use crate::Sealed;
 /// A type that represents a specific kind of resource in the game.
 /// Implementors of this trait represent different resource types, such as iron, copper, or science packs.
 /// Only useful as a type parameter; has no associated methods.
+///
+/// ## Modding
 ///
 /// To define a new resource type, use the `resource_type!` macro.
 pub trait ResourceType: Sealed + Debug {
@@ -82,6 +85,7 @@ impl<Resource: ResourceType> Display for InsufficientResourceError<Resource> {
 /// Holds an arbitrary amount of a resource.
 /// A [`Resource`] object can be split into smaller parts, combined or [`Bundle`]s can be extracted from them.
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[must_use = "This resource is being dropped without being used. If this is intentional, use the `let _ = resource;` pattern to silence this warning."]
 pub struct Resource<Content: ResourceType> {
     /// The amount of the resource contained in this [`Resource`].
     pub(crate) amount: u32,
@@ -151,11 +155,31 @@ impl<Content: ResourceType> Resource<Content> {
         }
     }
 
+    /// Removes up to the specified amount of resources from this [`Resource`] and returns them as a new [`Resource`].
+    /// If there are insufficient resources in the [`Resource`], it returns all available resources.
+    pub const fn split_off_max(&mut self, amount: u32) -> Self {
+        if let Some(remaining) = self.amount.checked_sub(amount) {
+            self.amount = remaining;
+            Resource::new(amount)
+        } else {
+            let all = self.amount;
+            self.amount = 0;
+            Resource::new(all)
+        }
+    }
+
     /// Empties this [`Resource`], returning all contained resources as a new [`Resource`].
     pub const fn empty(&mut self) -> Self {
         let amount = self.amount;
         self.amount = 0;
         Resource::new(amount)
+    }
+
+    /// Empties this [`Resource`] except for the specified amount, returning the emptied resources as a new [`Resource`].
+    pub const fn empty_except(&mut self, amount: u32) -> Self {
+        let to_empty = self.amount.saturating_sub(amount);
+        self.amount -= to_empty;
+        Resource::new(to_empty)
     }
 
     /// Empties this [`Resource`] into another [`Resource`], transferring all contained resources.
@@ -189,7 +213,12 @@ impl<Content: ResourceType> Resource<Content> {
 
 impl<Content: ResourceType> Display for Resource<Content> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{:?} x {}", Content::NAME, self.amount)
+        write!(
+            f,
+            "{amount} {content}",
+            amount = self.amount,
+            content = Content::NAME
+        )
     }
 }
 
@@ -232,9 +261,16 @@ impl<Content: ResourceType> Add for Resource<Content> {
     }
 }
 
-#[derive(Debug)]
+impl<Content: ResourceType> Sum for Resource<Content> {
+    fn sum<I: Iterator<Item = Self>>(iter: I) -> Self {
+        iter.fold(Resource::new_empty(), |cur, next| cur + next)
+    }
+}
+
 /// Contains a fixed (compile-time known) amount of a resource.
 /// A [`Bundle`] can be used to build structures or as input for recipes.
+#[derive(Debug)]
+#[must_use = "This bundle is being dropped without being used. If this is intentional, use the `let _ = bundle;` pattern to silence this warning."]
 pub struct Bundle<Content: ResourceType, const AMOUNT: u32> {
     dummy: PhantomData<Content>,
 }

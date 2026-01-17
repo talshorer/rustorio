@@ -18,13 +18,16 @@ use crate::{
 pub trait Technology: Sealed + Debug + Sized + TechnologyEx {
     /// The name of the technology.
     const NAME: &'static str;
+    /// How many of this technology's research points (`ResearchPoint<T>`) are needed to complete the research.
+    const REQUIRED_RESEARCH_POINTS: u32 = Self::REQUIRED_RESEARCH_POINTS_EX;
+
     /// The reward for completing this technology.
     type Unlocks;
 
     /// Carries out the research by consuming the required science packs and the research itself, returning whatever this research unlocks.
     fn research(
         self,
-        research_points: Bundle<ResearchPoint<Self>, { Self::RESEARCH_POINT_COST }>,
+        research_points: Bundle<ResearchPoint<Self>, { Self::REQUIRED_RESEARCH_POINTS }>,
     ) -> Self::Unlocks;
 }
 
@@ -45,7 +48,7 @@ pub trait TechnologyEx {
     /// The amount of ticks it takes to create one research point for this technology.
     const POINT_RECIPE_TIME: u64;
     /// How many of this technology's research points (`ResearchPoint<T>`) are needed to complete the research.
-    const RESEARCH_POINT_COST: u32;
+    const REQUIRED_RESEARCH_POINTS_EX: u32;
 
     /// Factory function to create a new `Self::Inputs` with zero resources.
     fn new_inputs() -> Self::Inputs;
@@ -87,11 +90,6 @@ where
     type OutputAmountsType = (u32,);
 
     const OUTPUT_AMOUNTS: (u32,) = (1,);
-}
-
-impl<T: Technology> RecipeEx for TechRecipe<T> {
-    type InputBundle = T::InputBundle;
-    type OutputBundle = Bundle<ResearchPoint<T>, 1>;
 
     fn new_inputs() -> Self::Inputs {
         T::new_inputs()
@@ -100,6 +98,11 @@ impl<T: Technology> RecipeEx for TechRecipe<T> {
     fn new_outputs() -> Self::Outputs {
         (Resource::new_empty(),)
     }
+}
+
+impl<T: Technology> RecipeEx for TechRecipe<T> {
+    type InputBundle = T::InputBundle;
+    type OutputBundle = Bundle<ResearchPoint<T>, 1>;
 
     fn new_output_bundle() -> Self::OutputBundle {
         Bundle::<ResearchPoint<T>, 1>::new()

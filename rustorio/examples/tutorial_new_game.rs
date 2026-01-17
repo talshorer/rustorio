@@ -17,8 +17,8 @@ fn user_main(mut tick: Tick, starting_resources: StartingResources) -> (Tick, Bu
 
     let StartingResources {
         iron,
-        iron_territory,
-        copper_territory,
+        mut iron_territory,
+        mut copper_territory,
         guide,
     } = starting_resources;
 

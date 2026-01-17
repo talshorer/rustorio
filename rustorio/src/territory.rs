@@ -10,7 +10,7 @@ use rustorio_engine::{
     resource,
 };
 
-use crate::resources::Iron;
+use crate::resources::{Copper, Iron};
 
 /// Ore is mined every MINING_TICK_LENGTH ticks by each miner in a territory.
 pub const MINING_TICK_LENGTH: u64 = 2;
@@ -25,9 +25,9 @@ const fn tick_to_mining_tick(tick: u64) -> u64 {
 pub struct Miner;
 
 impl Miner {
-    /// Builds a new miner. Requires 10 iron to build.
-    pub const fn build(iron: Bundle<Iron, 10>) -> Self {
-        let _ = iron;
+    /// Builds a new miner. Requires 10 [iron](crate::resources::Iron) and 5 [copper](crate::resources::Copper) to build.
+    pub const fn build(iron: Bundle<Iron, 10>, copper: Bundle<Copper, 5>) -> Self {
+        let _ = (iron, copper);
         Miner
     }
 }

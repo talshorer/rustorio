@@ -45,6 +45,12 @@ pub trait Recipe {
     /// for one cycle of the recipe.
     type Outputs: std::fmt::Debug;
 
+    /// Factory function to create a new `Self::Inputs` with zero resources.
+    fn new_inputs() -> Self::Inputs;
+
+    /// Factory function to create a new `Self::Outputs` with zero resources.
+    fn new_outputs() -> Self::Outputs;
+
     /// The type for `Self::InputAmountsType`, which is used to allow users to
     /// access the input amount for each of the input resource types, per recipe cycle.
     type InputAmountsType: std::fmt::Debug;
@@ -68,12 +74,6 @@ pub trait RecipeEx: Recipe {
     /// A type guaranteed to contain exactly the output resources for one recipe cycle.
     /// Used in handcrafting.
     type OutputBundle: std::fmt::Debug;
-
-    /// Factory function to create a new `Self::Inputs` with zero resources.
-    fn new_inputs() -> Self::Inputs;
-
-    /// Factory function to create a new `Self::Outputs` with zero resources.
-    fn new_outputs() -> Self::Outputs;
 
     /// Factory function to create a new `Self::InputBundle`.
     fn new_output_bundle() -> Self::OutputBundle;

@@ -11,7 +11,7 @@ use rustorio_engine::{
 use crate::{
     Bundle,
     guide::Guide,
-    research::PointsTechnology,
+    research::SteelTechnology,
     resources::{Copper, CopperOre, Iron, IronOre, Point},
     territory::Territory,
 };
@@ -55,8 +55,8 @@ pub struct StandardStartingResources {
     pub iron_territory: Territory<IronOre>,
     /// Initial territory rich in copper ore.
     pub copper_territory: Territory<CopperOre>,
-    /// The tech you must research to start creating the game winning points.
-    pub points_technology: PointsTechnology,
+    /// The first technology the player can research.
+    pub steel_technology: SteelTechnology,
 }
 impl StartingResources for StandardStartingResources {
     fn init(tick: &Tick) -> Self {
@@ -64,7 +64,7 @@ impl StartingResources for StandardStartingResources {
             iron: bundle(),
             iron_territory: Territory::new(tick, 20),
             copper_territory: Territory::new(tick, 20),
-            points_technology: PointsTechnology,
+            steel_technology: SteelTechnology,
         }
     }
 }
@@ -74,5 +74,5 @@ pub struct Standard;
 
 impl GameMode for Standard {
     type StartingResources = StandardStartingResources;
-    type VictoryResources = Bundle<Point, 10>;
+    type VictoryResources = Bundle<Point, 200>;
 }
