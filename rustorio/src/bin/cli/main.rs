@@ -117,7 +117,7 @@ impl SetupArgs {
         }
 
         println!("Setting up Rustorio at '{}'...", canonical_path.display());
-        // Run `cargo new --bin self.name`
+        // Run `cargo new --bin self.name` with the same `cargo` binary as used to build this CLI
         Command::new(env!("CARGO"))
             .arg("new")
             .arg("--bin")
@@ -136,7 +136,7 @@ impl SetupArgs {
             .run()
             .context("Failed to add Rustorio as a dependency")?;
         fs::write(path.join("rustorio.toml"), "").context("Failed to create rustorio.toml")?;
-        fs::write(path.join("rust-toolchain"), RUST_TOOLCHAIN)
+        fs::write(path.join("rust-toolchain.toml"), RUST_TOOLCHAIN)
             .context("Failed to create rust-toolchain file")?;
         let save_path = path.join("src").join("bin");
         fs::create_dir_all(&save_path).context("Failed to create save directory")?;
@@ -290,7 +290,8 @@ impl PlayArgs {
         if !save_game_path.exists() {
             bail!("Save game '{}' does not exist.", self.save_name);
         }
-        Command::new(env!("CARGO"))
+        // Use a raw "cargo" to allow the toolchain file to take effect.
+        Command::new("cargo")
             .arg("run")
             .arg("--bin")
             .arg(&self.save_name)
