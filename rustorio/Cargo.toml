@@ -19,7 +19,7 @@ cli = ["dep:clap", "dep:anyhow", "dep:dialoguer", "dep:thiserror"]
 workspace = true
 
 [dependencies]
-rustorio-engine = { path = "../rustorio-engine", version = "0.1.0" }
+rustorio-engine = { path = "../rustorio-engine", version = "0.1.1" }
 
 anyhow = { version = "1.0.100", optional = true }
 clap = { version = "4.5.53", optional = true, features = ["derive"] }
