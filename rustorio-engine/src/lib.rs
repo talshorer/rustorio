@@ -3,9 +3,10 @@
 #![warn(missing_docs)]
 //! The core engine for Rustorio.
 //! Only relevant if you are writing a mod for Rustorio.
-//! To play the game, depend on the `rustorio` crate instead.
+//! A save file depending on this crate has access to some APIs that make it trivial to cheat, which can be great for testing and debugging, but removes the challenge.
+//! To play the game, depend on the [`rustorio`](https://crates.io/crates/rustorio) crate instead.
 //!
-//! For more information, see the [repo](https://github.com/albertsgarde/rustorio)
+//! For more information, see the [repo](https://github.com/albertsgarde/rustorio).
 
 pub mod gamemodes;
 pub mod machine;
