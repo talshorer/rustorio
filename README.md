@@ -20,10 +20,10 @@ fn user_main(mut tick: Tick, starting_resources: StartingResources) -> (Tick, Bu
     let StartingResources { iron, mut copper_territory } = starting_resources;
 ```
 
-You can use this to create a [`Furnace`](https://docs.rs/rustorio/latest/rustorio/buildings/struct.Furnace.html) to turn copper ore (which you get by using [`mine_copper`](https://docs.rs/rustorio/latest/rustorio/fn.mine_copper.html)) into copper.
+You can use this to create a [`Furnace`](https://docs.rs/rustorio/latest/rustorio/buildings/struct.Furnace.html) to turn copper ore (which you get by using [`Territory::handmine`](https://docs.rs/rustorio/latest/rustorio/territory/struct.Territory.html#method.hand_mine)) into copper.
 
 ```rust
-    let mut furnace = Furnace::build(&tick, IronSmelting, iron);
+    let mut furnace = Furnace::build(&tick, CopperSmelting, iron);
 
     let copper_ore = copper_territory.hand_mine::<8>(&mut tick);
 
