@@ -7,9 +7,7 @@
 [Discord]: https://dcbadge.limes.pink/api/server/uKJugp85Fk?style=flat
 [discord.gg]: https://discord.gg/uKJugp85Fk
 
-The first game written _and played_ entirely in Rust's type system. Not just do you play by
-writing Rust code, the rules of the game are enforced by the Rust compiler! If
-you can write the program so it compiles and doesn't panic, you win!
+The first game written _and played_ entirely in Rust's type system. You don't play by writing Rust code; the rules of the game are enforced by the Rust compiler! If you can write the program so it compiles and doesn't panic, you win!
 
 A while ago I realized that with Rust's affine types and ownership, it was possible to simulate resource scarcity. Combined with the richness of the type system, I wondered if it was possible to create a game with the rules enforced entirely by the Rust compiler. Well, it looks like it is. 
 
@@ -33,7 +31,7 @@ You can use this to create a [`Furnace`](https://docs.rs/rustorio/latest/rustori
 
 Because none of these types implement `Copy` or `Clone` and because they all have hidden fields, the only way (I hope) to create them is through the use of other resources, or in the case of ore, [time](https://docs.rs/rustorio/latest/rustorio/struct.Tick.html).
 
-The game is pretty simple and easy right now, but I have many ideas for future features. I really enjoy figuring our how to wrangle the Rust language into doing what I want in this way, and I really hope some of you enjoy this kind of this as well. Please do give it a try and tell me what you think! I'm especially interested in hearing what makes it work or not work as a *game*. It's a very weird user interface, so we're kinda reinventing some parts of game design from scratch here.
+The game is pretty simple and easy right now, but I have many ideas for future features. I really enjoy figuring out how to wrangle the Rust language into doing what I want in this way, and I really hope some of you enjoy this kind of thing as well. Please do give it a try and tell me what you think! I'm especially interested in hearing what makes it work or not work as a *game*. It's a very weird user interface, so we're kinda reinventing some parts of game design from scratch here.
 
 ## How to play
 1. Install [Rust](https://www.rust-lang.org/tools/install). Specifically it's
