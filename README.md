@@ -50,7 +50,7 @@ The game is pretty simple and easy right now, but I have many ideas for future f
    many ticks it took you to win.
 
 ### After the tutorial
-To play other game modes, run `rustorio new-game` and specify a game mode.
+To play other game modes, run `rustorio new-game GAMEMODE` and specify a game mode like `standard`.
 Use `rustorio new-game --help` to see all available game modes.
 
 ## Rules
